@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browser Info</title>
+  <style>
+    body {
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <script src='../js/lightue.min.js'></script>
+  <script>
+    var vm = Lightue({
+      infos: [
+        'window.innerWidth: ' + window.innerWidth,
+        'window.innerHeight: ' + window.innerHeight,
+        'window.screen.width: ' + window.screen.width,
+        'window.screen.height: ' + window.screen.height,
+        'window.devicePixelRatio: ' + window.devicePixelRatio,
+        'navigator.userAgent: ' + navigator.userAgent,
+      ],
+      position: {
+        accuracy: 'accuracy: ',
+        latitude: 'latitude: ',
+        longitude: 'longitude: ',
+      }
+    })
+    navigator.geolocation.getCurrentPosition((result) => {
+      vm.position.accuracy += result.coords.accuracy
+      vm.position.latitude += result.coords.latitude
+      vm.position.longitude += result.coords.longitude
+      vm.position.$render()
+    })
+  </script>
+</body>
+
+</html>

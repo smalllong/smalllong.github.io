@@ -1,0 +1,23 @@
+{
+  "name": "smalllong.github.io",
+  "version": "1.0.0",
+  "description": "smalllong's website",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smalllong/smalllong.github.io.git"
+  },
+  "author": "smalllong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smalllong/smalllong.github.io/issues"
+  },
+  "homepage": "https://github.com/smalllong/smalllong.github.io#readme",
+  "devDependencies": {
+    "lodash": "^4.17.13",
+    "stylus": "^0.54.5"
+  }
+}

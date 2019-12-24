@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			html, body {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+			}
+			#parent {
+				text-align: center;
+				width: 100%;
+				height: 100%;
+				background-color: #f00;
+			}
+			#child {
+				width: 500px;
+				height: 200px;
+				background-color: #0f0;
+			}
+			.vc {
+				display: inline-block;
+			}
+			.vc-parent {
+				display: table-cell;
+				vertical-align: middle;
+			}
+			.vc-grandpa {
+				display: table;
+			}
+		</style>
+	</head>
+	<body class='vc-grandpa'>
+		<div id='parent' class='vc-parent'>
+			<div id='child' class='vc'>hahaha</div>
+		</div>
+	</body>
+</html>

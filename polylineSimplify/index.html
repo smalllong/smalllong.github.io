@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>可拖拽的路线规划</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css" />
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=153c9b64b01f9389c1198bd72850cefe"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+
+<body>
+    <div id="container"></div>
+    <div id="tip">修改简化精度(米)：<input type='number' value='50' onchange="setAccuracy(this)" /> 当前路径点数：<span id='count'></span></div>
+    <div class="button-group">
+        <input type="button" class="button" value="显示原路径" onclick="originRoute()" />
+        <input type="button" class="button" value="简化折线" onclick="simplify();" />
+    </div>
+    <script type="text/javascript" src='index.js'></script>
+</body>
+
+</html>

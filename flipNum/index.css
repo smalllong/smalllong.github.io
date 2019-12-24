@@ -1,0 +1,70 @@
+
+/*翻页数字*/
+.flip-num {
+	display: inline-block;
+	perspective: 200px;
+	width:56px;
+	height:80px;
+	vertical-align: middle;
+}
+.filp-num>div {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.flip-num span {
+	backface-visibility: hidden;
+	background-repeat: no-repeat;
+	width:56px;
+	height:40px;
+	left:0;
+	position:absolute;
+}
+.flip-top {
+	background-position: center 11px;
+	transform-origin: center bottom;
+	top:0;
+}
+.flip-bottom {
+	background-position: center -29px;
+	transform-origin: center top;
+	top:40px;
+}
+@keyframes flipover-top {
+    0% {
+        z-index: 8;
+        transform: rotateX(0);
+    }
+    50% {
+        z-index: 8;
+    }
+    51% {
+        z-index: 7;
+    }
+    100% {
+        z-index: 7;
+        transform: rotateX(-180deg);
+    }
+}
+@keyframes flipover-bottom {
+    0% {
+        z-index: 7;
+        transform: rotateX(180deg);
+    }
+    50% {
+        z-index: 7;
+    }
+    51% {
+        z-index: 8;
+    }
+    100% {
+        z-index: 8;
+        transform: rotateX(0);
+    }
+}
+.flip-num.flipping>.flip-face>.flip-top {
+    animation: flipover-top 1.5s forwards;
+}
+.flip-num.flipping>.flip-back>.flip-bottom {
+    animation: flipover-bottom 1.5s forwards;
+}

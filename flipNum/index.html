@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel='stylesheet' href='index.css'>
+        <script src='../js/vue-1.0.24.min.js'></script>
+		<script type="text/x-template" id="flip-num-template">
+			<div class='flip-num' :class='{flipping: flipping}'>
+				<div class='flip-face' v-show='flipping'>
+					<span class='flip-top' :style='{backgroundImage: "url("+imgTop+".png)"}'></span>
+					<span class='flip-bottom' :style='{backgroundImage: "url("+imgTop+".png)"}'></span>
+				</div>
+				<div class='flip-back'>
+					<span class='flip-top' :style='{backgroundImage: "url("+imgBottom+".png)"}'></span>
+					<span class='flip-bottom' :style='{backgroundImage: "url("+imgBottom+".png)"}'></span>
+				</div>
+				<img src='shadow.png'>
+			</div>
+		</script>
+    </head>
+    <body id='app'>
+        <button @click='minus'>-</button>
+        <flip-num :value='value'></flip-num>
+        <button @click='add'>+</button>
+        <script src='index.js'></script>
+    </body>
+</html>
