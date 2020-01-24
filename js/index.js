@@ -1,32 +1,34 @@
+function randomColor() {
+  var h = Math.floor(Math.random()*256),
+    s = 80+Math.ceil(20*Math.random()),
+    l = 30+Math.round(20*Math.random())
+  return 'hsl('+h+','+s+'%,'+l+'%)'
+}
+
 function Tile(title, link, img) {
-  this.tileFace = {
+  return {
+    $tag: 'a',
+    _href: link,
+    _style: 'background-color: '+randomColor(),
     tileTitle: title,
-  }
-  if (img)
-    this.tileFace.tileImg = {
+    tileImg: img?{
       $tag: 'img',
       _src: img,
-    }
-  this.tileBack = {
-    tileLink: {
-      $tag: 'a',
-      $inner: 'see more',
-      _href: link,
-    }
+    }:undefined,
   }
 }
 
 var vm = Lightue({
   tiles: [
-    new Tile('get your browser information', 'browser/index.html', 'browser/index.png'),
-    new Tile('different behavior of 4 center methods', 'center/index.html', 'center/index.png'),
-    new Tile('Polyline Simplify on a Gaode Map', 'polylineSimplify/index.html', 'polylineSimplify/index.png'),
-    new Tile('Zoomable full screen photo viewer', 'photoViewer/index.html'),
-    new Tile('Simple polygon test', 'simplePolygon/index.html'),
-    new Tile('Chat', 'chat/index.html'),
-    new Tile('A colorful ball fountain with motion blur', 'fountain/index.html'),
-    new Tile('A editable full calendar', 'editable-full-calendar/index.html'),
-    new Tile('a d3js editable tree', 'editable-tree/index.html', 'img/editable-tree.png'),
-    new Tile('a d3js fan', 'fan/index.html', 'img/fanLite.png'),
+    Tile('get your browser information', 'browser/index.html', 'browser/index.png'),
+    Tile('different behavior of 4 center methods', 'center/index.html', 'center/index.png'),
+    Tile('Polyline Simplify on a Gaode Map', 'polylineSimplify/index.html', 'polylineSimplify/index.png'),
+    Tile('Zoomable full screen photo viewer', 'photoViewer/index.html'),
+    Tile('Simple polygon test', 'simplePolygon/index.html'),
+    Tile('Chat', 'chat/index.html'),
+    Tile('A colorful ball fountain with motion blur', 'fountain/index.html'),
+    Tile('A editable full calendar', 'editable-full-calendar/index.html'),
+    Tile('a d3js editable tree', 'editable-tree/index.html', 'img/editable-tree.png'),
+    Tile('a d3js fan', 'fan/index.html', 'img/fanLite.png'),
   ]
 })

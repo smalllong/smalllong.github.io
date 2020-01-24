@@ -4,42 +4,21 @@ body {
   color: #fff;
 }
 .tiles {
+  font-weight: bold;
   text-align: center;
 }
 .tiles-item {
+  color: #fff;
   display: inline-block;
-  margin: 10px;
-  perspective: 800px;
-  position: relative;
-  width: 200px;
-  height: 200px;
-}
-.tiles-item >div {
-  position: absolute;
-  left: 0;
-  top: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  background-color: #222;
-  padding: 20px;
   width: 160px;
   height: 160px;
-  transition: transform 0.5s;
-}
-.tiles-item:hover >.tile-face {
-  transform: rotateX(180deg);
-}
-.tiles-item:hover >.tile-back {
-  transform: rotateX(360deg);
+  padding: 8px;
+  margin: 16px;
+  text-align: left;
+  vertical-align: middle;
 }
 .tile-img {
   margin-top: 10px;
-  max-width: 192px;
-  max-height: 140px;
-}
-.tile-back {
-  transform: rotateX(180deg);
-}
-.tile-link {
-  float: right;
+  max-width: 110%;
+  max-height: 110%;
 }
