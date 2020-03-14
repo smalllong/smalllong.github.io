@@ -21,6 +21,7 @@ function Tile(title, link, img) {
 var vm = Lightue({
   tiles: [
     Tile('get your browser information', 'browser/index.html', 'browser/index.png'),
+    Tile('a simple digital clock', 'clock/index.html', 'clock/index.png'),
     Tile('different behavior of 4 center methods', 'center/index.html', 'center/index.png'),
     Tile('Polyline Simplify on a Gaode Map', 'polylineSimplify/index.html', 'polylineSimplify/index.png'),
     Tile('Zoomable full screen photo viewer', 'photoViewer/index.html'),
