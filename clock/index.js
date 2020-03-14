@@ -12,3 +12,8 @@ setInterval(function() {
         rootTop = Math.floor(Math.random()*(window.innerHeight - 120))
     vm.$render()
 }, 1000)
+
+window.onresize = function() {
+    rootTop = Math.floor(Math.random()*(window.innerHeight - 120))
+    vm.$render()
+}
