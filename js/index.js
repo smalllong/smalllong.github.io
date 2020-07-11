@@ -20,6 +20,7 @@ function Tile(title, link, img) {
 
 var vm = Lightue({
   tiles: [
+    Tile('Skyscrapers Map in Shanghai', 'sh-skyscrapers/index.html'),
     Tile('get your browser information', 'browser/index.html', 'browser/index.png'),
     Tile('a simple digital clock', 'clock/index.html', 'clock/index.png'),
     Tile('different behavior of 4 center methods', 'center/index.html', 'center/index.png'),
