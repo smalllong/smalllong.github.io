@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>弹跳小球喷泉</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            background-color: #000;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<canvas id="画布"></canvas>
+<script>
+    'use strict';
+    window.addEventListener('load', function () {
+        var 画布 = document.getElementById("画布"), 绘图环境 = 画布.getContext("2d"), 小球集合 = [], 小球每毫秒数量 = 0.02, 地面, then = 0, t, twoPi = Math.PI * 2;
+        function reLayout() {
+            画布.width = document.body.clientWidth * window.devicePixelRatio;
+            画布.height = document.body.clientHeight * window.devicePixelRatio;
+            地面 = 画布.height - 10;
+        }
+        window.addEventListener('resize', reLayout);
+        reLayout();
+        requestAnimationFrame(重绘);
+        function 重绘(timestamp) {
+            t = timestamp - then;
+            then = timestamp;
+            var e = t * 小球每毫秒数量; //小球密度期望值
+            var 新小球数量 = (e|0) + ((Math.random() < (e - (e|0))) ? 1 : 0);
+            for (var i = 0; i < 新小球数量; i++)
+                小球集合.push(new 小球());
+            绘图环境.clearRect(0, 0, 画布.width, 画布.height);
+            for (i = 小球集合.length - 1; i >= 0; i--) {
+                var 当前球 = 小球集合[i];
+                绘图环境.fillStyle = 当前球.color;
+                绘图环境.beginPath();
+                绘图环境.arc(当前球.x, 当前球.y, 当前球.r, 0, twoPi);
+                绘图环境.closePath();
+                绘图环境.fill();
+                if (当前球.y > 地面 && 当前球.vy > 0) {
+                    当前球.vy = -当前球.vy * (Math.random() * 0.5 + 0.25);
+                }
+                if (当前球.colorA <= 0) {
+                    小球集合.splice(i, 1);
+                }
+                当前球.move(t);
+            }
+            requestAnimationFrame(重绘);
+        }
+        function 小球() {
+            this.colorRgb = "rgba(" + (255 - (Math.random() * 200 | 0)) + "," + (255 - (Math.random() * 200 | 0)) + "," + (255 - (Math.random() * 200 | 0)) + ",";
+            this.colorA = 1;
+            this.x = 画布.width / 2;
+            this.y = 地面;
+            this.vx = (Math.random() - 0.5) * 0.2;
+            this.vy = -0.4;
+        }
+        小球.prototype = {
+            ay: 0.0002,
+            get color() { return this.colorRgb + this.colorA + ")" },
+            hideSpeed: 0.0001,
+            move: function(t) {
+                this.x += this.vx * t;
+                this.y += this.vy * t;
+                this.vy += this.ay * t;
+                this.colorA -= this.hideSpeed * t;
+            },
+            r: 5,
+        };
+    });
+</script>
+</body>
+</html>
