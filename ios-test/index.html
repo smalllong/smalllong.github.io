@@ -15,14 +15,30 @@
       margin-bottom: env(safe-area-inset-bottom);
       padding-bottom: env(safe-area-inset-bottom);
     }
+    div {
+      background-color: #bbb;
+      margin: 20px;
+      height: 200px;
+    }
+    .blue {
+      background-color: aqua;
+    }
   </style>
   <script>
     function log() {
-      document.body.insertAdjacentText('afterbegin', 'clicked\n')
+      document.body.classList.toggle('blue')
     }
   </script>
 </head>
 <body>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
   <button id=bar onclick='log()'> click me </button>
 </body>
 </html>
