@@ -9,6 +9,15 @@
     body {
       font-size: 20px;
     }
+    .test {
+      background-color: #ddd;
+      margin: 20px;
+      height: 200px;
+    }
+    .root {
+      position: fixed;
+      width: 100%;
+    }
   </style>
 </head>
 
@@ -36,7 +45,19 @@
       vm.position.longitude += result.coords.longitude
       vm.position.$render()
     })
+    window.onresize = function(e) {
+      vm.infos[0] = 'window.innerWidth: ' + window.innerWidth
+      vm.infos[1] = 'window.innerHeight: ' + window.innerHeight
+      vm.infos.$render()
+    }
   </script>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
 </body>
 
 </html>
