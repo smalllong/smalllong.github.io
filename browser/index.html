@@ -37,7 +37,10 @@
         accuracy: 'accuracy: ',
         latitude: 'latitude: ',
         longitude: 'longitude: ',
-      }
+      },
+      event: {
+        name: ''
+      },
     })
     navigator.geolocation.getCurrentPosition((result) => {
       vm.position.accuracy += result.coords.accuracy
@@ -48,7 +51,24 @@
     window.onresize = function(e) {
       vm.infos[0] = 'window.innerWidth: ' + window.innerWidth
       vm.infos[1] = 'window.innerHeight: ' + window.innerHeight
+      vm.event.name = 'resize'
       vm.infos.$render()
+    }
+    window.ontouchstart = function(e) {
+      vm.event.name = 'touchstart'
+      vm.event.$render()
+    }
+    window.ontouchmove = function(e) {
+      vm.event.name = 'touchmove'
+      vm.event.$render()
+    }
+    window.ontouchend = function(e) {
+      vm.event.name = 'touchend'
+      vm.event.$render()
+    }
+    window.onclick = function(e) {
+      vm.event.name = 'click'
+      vm.event.$render()
     }
   </script>
   <div class='test'></div>
