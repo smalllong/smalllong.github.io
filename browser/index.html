@@ -54,19 +54,19 @@
       vm.event.name = 'resize'
       vm.infos.$render()
     }
-    window.ontouchstart = function(e) {
+    document.body.ontouchstart = function(e) {
       vm.event.name = 'touchstart'
       vm.event.$render()
     }
-    window.ontouchmove = function(e) {
+    document.body.ontouchmove = function(e) {
       vm.event.name = 'touchmove'
       vm.event.$render()
     }
-    window.ontouchend = function(e) {
+    document.body.ontouchend = function(e) {
       vm.event.name = 'touchend'
       vm.event.$render()
     }
-    window.onclick = function(e) {
+    document.body.onclick = function(e) {
       vm.event.name = 'click'
       vm.event.$render()
     }
