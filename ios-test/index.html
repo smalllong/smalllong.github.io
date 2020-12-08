@@ -29,6 +29,16 @@
     .blue {
       background-color: aqua;
     }
+    button {
+      width: 70%;
+      height: 32px;
+    }
+    button:active {
+      background-color: red;
+    }
+    button.tap {
+      -webkit-tap-highlight-color: red;
+    }
   </style>
   <script>
     function log() {
@@ -40,9 +50,15 @@
   <div>without hack</div>
   <div ontouchstart>ontouchstart</div>
   <div class="tap">-webkit-tap-highlight-color</div>
-  <div></div>
-  <div></div>
-  <div></div>
+  <div>
+    <button>without hack</button>
+  </div>
+  <div>
+    <button ontouchstart>ontouchstart</button>
+  </div>
+  <div>
+    <button class="tap">-webkit-tap-highlight-color</button>
+  </div>
   <div></div>
   <div></div>
   <button id=bar onclick='log()'> click me </button>
