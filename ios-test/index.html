@@ -20,6 +20,12 @@
       margin: 20px;
       height: 200px;
     }
+    div:active {
+      background-color: aqua;
+    }
+    div.tap {
+      -webkit-tap-highlight-color: brown;
+    }
     .blue {
       background-color: aqua;
     }
@@ -31,9 +37,9 @@
   </script>
 </head>
 <body>
-  <div></div>
-  <div></div>
-  <div></div>
+  <div>without hack</div>
+  <div ontouchstart>ontouchstart</div>
+  <div class="tap">-webkit-tap-highlight-color</div>
   <div></div>
   <div></div>
   <div></div>
