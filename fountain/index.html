@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>弹跳小球喷泉</title>
+    <style>
+        html, body {
+            margin: 0;
+            height: 100%;
+            background-color: #000;
+            color: #fff;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        label {
+            margin: 0 4px;
+        }
+        #controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+<div id='controls'>
+    实时fps:<span id='rtFps'></span>
+    <label>
+        每秒小球数量:
+        <input onchange='changeNumBalls(event)' type='text' value='20'>
+    </label>
+    <label>
+        fps:
+        <select onchange="changeFps(event)">
+            <option value="native">原生(requestAnimationFrame)</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
+            <option value="60">60</option>
+            <option value="75">75</option>
+            <option value="90">90</option>
+            <option value="120">120</option>
+            <option value="144">144</option>
+            <option value="240">240</option>
+            <option value="360">360</option>
+        </select>
+    </label>
+    <label>
+        <input type="checkbox" onchange="changeBlur(event)">
+        动态模糊
+    </label>
+</div>
+<canvas id="canvas"></canvas>
+<script>
+    'use strict';
+    var fps = NaN, blur = false, numBalls = 0.02, timeElapsed = 0
+    function changeFps(e) {
+        fps = Number(e.target.value)
+    }
+    function changeBlur(e) {
+        blur = e.target.checked
+    }
+    function changeNumBalls(e) {
+        numBalls = Number(e.target.value) / 1000
+    }
+    var raf = function(cb) {
+        if (isNaN(fps) && window.requestAnimationFrame) {
+            requestAnimationFrame(cb)
+            return
+        }
+        if (!window.aniStart) window.aniStart = Date.now()
+        setTimeout(function() {
+            cb(Date.now() - window.aniStart)
+        }, 1000/fps - timeElapsed)
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        var canvas = document.getElementById("canvas"), ctx = canvas.getContext("2d"), then = 0, balls = [], floor, t, twoPi = Math.PI * 2;
+        function reLayout() {
+            canvas.width = document.body.clientWidth * window.devicePixelRatio;
+            canvas.height = document.body.clientHeight * window.devicePixelRatio;
+            floor = canvas.height - 10;
+        }
+        window.addEventListener('resize', reLayout);
+        reLayout();
+        raf(重绘);
+        function 重绘(timestamp) {
+            var calcStart = Date.now()
+            t = timestamp - then
+            then = timestamp
+            rtFps.innerText = Math.round(1000/t)
+            var e = t * numBalls; //小球密度期望值
+            var 新小球数量 = (e|0) + ((Math.random() < (e - (e|0))) ? 1 : 0);
+            for (var i = 0; i < 新小球数量; i++)
+                balls.push(new 小球());
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (i = balls.length - 1; i >= 0; i--) {
+                var 当前球 = balls[i];
+                if (blur) {
+                    var spreadCount = Math.max(Math.abs(当前球.vx), Math.abs(当前球.vy)) > 0.1 ? 4 : 2
+                    for (var j=-spreadCount; j<=spreadCount; j++) {
+                        ctx.fillStyle = 当前球.color.replace(/,[0-9\.]*\)/, ','+当前球.colorA*(1/spreadCount)+')');
+                        ctx.beginPath();
+                        ctx.arc(当前球.x - j*当前球.vx*t/spreadCount/2, 当前球.y - j*当前球.vy*t/spreadCount/2, 当前球.r, 0, twoPi);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                } else {
+                        ctx.fillStyle = 当前球.color;
+                        ctx.beginPath();
+                        ctx.arc(当前球.x + 0, 当前球.y, 当前球.r, 0, twoPi);
+                        ctx.closePath();
+                        ctx.fill();
+                }
+                if (当前球.y > floor && 当前球.vy > 0) {
+                    当前球.vy = -当前球.vy * (Math.random() * 0.5 + 0.25);
+                }
+                if (当前球.colorA <= 0) {
+                    balls.splice(i, 1);
+                }
+                当前球.move(t);
+            }
+            timeElapsed = Date.now() - calcStart
+            raf(重绘)
+        }
+        function 小球() {
+            this.colorRgb = "rgba(" + (255 - (Math.random() * 200 | 0)) + "," + (255 - (Math.random() * 200 | 0)) + "," + (255 - (Math.random() * 200 | 0)) + ",";
+            this.colorA = 0.7;
+            this.x = canvas.width / 2;
+            this.y = floor;
+            this.vx = (Math.random() - 0.5) * 0.2;
+            this.vy = -0.4;
+        }
+        小球.prototype = {
+            ay: 0.0002,
+            get color() { return this.colorRgb + this.colorA + ")" },
+            hideSpeed: 0.0001,
+            move: function(t) {
+                this.x += this.vx * t;
+                this.y += this.vy * t;
+                this.vy += this.ay * t;
+                this.colorA -= this.hideSpeed * t;
+            },
+            r: 5,
+        };
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+	html,body {
+		background-color: #222;
+		color: #fff;
+	}
+	tspan {
+		font-family: arial;
+	}
+	path {
+		stroke: white;
+	}
+	</style>
+	<script src="../js/d3.v3.min.js"></script>
+	<script src="fanLite.js"></script>
+</head>
+
+<body>
+<div><a href="../index.html">Back</a></div>
+<div id="graph">
+</div>
+<script>
+var options = {
+	radius:350,
+	textDepth:2,
+	weight: "size",
+	count: false
+};
+drawFan("#graph","flare.json",options);
+</script>
+</body>
+</html>

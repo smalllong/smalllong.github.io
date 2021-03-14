@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browser Info</title>
+  <style>
+    html {
+      height: 100%;
+    }
+    body {
+      font-size: 20px;
+      min-height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <script src='../js/lightue.min.js'></script>
+  <script>
+    document.write('window.innerWidth: ' + window.innerWidth + '<br>')
+    document.write('window.innerHeight: ' + window.innerHeight + '<br>')
+    document.write('window.screen.width: ' + window.screen.width + '<br>')
+    document.write('window.screen.height: ' + window.screen.height + '<br>')
+    document.write('window.devicePixelRatio: ' + window.devicePixelRatio + '<br>')
+    document.write('navigator.userAgent: ' + navigator.userAgent + '<br>')
+    document.body.ontouchstart = function(e) {
+      document.body.insertAdjacentHTML('beforeend', 'touchstart<br>')
+    }
+    document.body.ontouchmove = function(e) {
+      document.body.insertAdjacentHTML('beforeend', 'touchmove<br>')
+    }
+    document.body.ontouchend = function(e) {
+      document.body.insertAdjacentHTML('beforeend', 'touchend<br>')
+    }
+    document.body.onclick = function(e) {
+      document.body.insertAdjacentHTML('beforeend', 'click<br>')
+    }
+  </script>
+</body>
+
+</html>

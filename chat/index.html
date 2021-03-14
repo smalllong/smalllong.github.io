@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html id='app'>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<title>Chat</title>
+		<link rel="stylesheet" href="https://unpkg.com/framework7@1.6.4/dist/css/framework7.ios.min.css">
+		<link rel="stylesheet" href="https://unpkg.com/framework7@1.6.4/dist/css/framework7.ios.colors.min.css">
+		<link rel="stylesheet" href="css/index.css">
+		<link v-if="options.nightMode" rel="stylesheet" href="css/night.css">
+	</head>
+
+	<body>
+		<div class="statusbar-overlay"></div>
+		<div class="views">
+			<div class="view view-main">
+				<!-- 导航栏 -->
+				<div class="navbar">
+					<div class="navbar-inner">
+						<div class="center sliding">对话</div>
+					</div>
+					<div class="navbar-inner cached" data-page="chat">
+						<div class="left sliding">
+							<a href="#index" class="back link">
+								<i class="icon icon-back"></i>
+								<span class="">返回</span>
+							</a>
+						</div>
+						<div class="center sliding">{{conv==null?'':exceptSelf(conv.members)}}</div>
+					</div>
+					<div class="navbar-inner cached" data-page="settings">
+						<div class="left sliding">
+							<a href="#index" class="back link">
+								<i class="icon icon-back"></i>
+								<span class="">返回</span>
+							</a>
+						</div>
+						<div class="center sliding">设置</div>
+					</div>
+				</div>
+				<div class="pages navbar-through toolbar-fixed">
+
+					<!-- 对话列表页面 -->
+					<div data-page="conv" class="page">
+						<form id='new-conv-form' class="searchbar">
+							<div class="searchbar-input">
+								<input id='new-conv-input' type="text" placeholder="输入名称以添加对话，多人以逗号分隔" v-model="newConvMembers">
+							</div>
+						</form>
+						<div class="searchbar-overlay"></div>
+						<div class="page-content">
+							<!-- 多套一层div以保证滚动区域不被各种bars盖住 -->
+							<div class='scroll-wrap'>
+								<!--对话-->
+								<div id="conversations">
+									<div class="list-block media-list">
+										<ul>
+											<li v-for="conv of convs" class='swipeout'>
+												<div class='swipeout-content'>
+													<a class="item-content item-link conv-a" href='#chat?convId={{conv.id}}'>
+														<div class="item-inner">
+															<div class="item-title-row">
+																<div class="item-title">{{exceptSelf(conv.members)}}</div>
+																<div class="item-after">{{timeToString(conv.lastMessageAt)}}</div>
+															</div>
+															<div class="item-text">{{conv.lastMessage==null?'':conv.lastMessage.text}}</div>
+														</div>
+													</a>
+												</div>
+												<div class='swipeout-actions-right'>
+													<a class="swipeout-no-delete swipeout-close" href='#' v-on:click='delConv($index)'>删除</a>
+												</div>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="toolbar">
+							<div class="toolbar-inner">
+								<a id='user-btn' href="#" class="link">{{userName}}</a>
+								<a id='setting-btn' href="#settings" class="link">设置</a>
+							</div>
+						</div>
+					</div>
+
+					<!-- 聊天页面 -->
+					<div class="page cached toolbar-fixed" data-page="chat">
+						<div class="toolbar messagebar">
+							<div class="toolbar-inner message-input">
+								<a id='attach-a' class='button open-picker' href='#' data-picker='.attach-picker'><i class='icon'></i></a>
+								<textarea id='new-msg-area' placeholder="消息" v-model='newMsg' v-on:keydown.enter='handleEnter'></textarea>
+								<button id='send-button' class='button'>发送</button>
+							</div>
+						</div>
+						<div class="page-content messages-content">
+							<div class='scroll-wrap' id='messages-scroll'>
+								<div class="messages">
+									<div v-for='msg of msgs'>
+										<div class='messages-date' v-if='$index==0 || msg.timestamp-msgs[$index-1].timestamp>30000'>{{timeToString(msg.timestamp)}}</div>
+										<div class="message {{userName==msg.from?'message-sent':'message-received'}} message-with-tail" v-if='msg.type == AV.TextMessage.TYPE'>
+											<div class="message-name" v-if='userName!=msg.from'>{{msg.from}}</div>
+											<!-- hack for vuejs don't support \n to be <br/> -->
+											<div class="message-text">
+												<div v-for='line in msg.text.split("\n")'>{{line}}</div>
+											</div>
+										</div>
+										<div class="message {{userName==msg.from?'message-sent':'message-received'}} message-with-tail" v-if='msg.type == AV.ImageMessage.TYPE'>
+											<div class="message-name" v-if='userName!=msg.from'>{{msg.from}}</div>
+											<div class="message-text"><img :src="msg.getFile().url()"></div>
+										</div>
+										<div class="message {{userName==msg.from?'message-sent':'message-received'}} message-with-tail" v-if='msg.type == AV.FileMessage.TYPE'>
+											<div class="message-name" v-if='userName!=msg.from'>{{msg.from}}</div>
+											<div class="message-text">
+												<img id='file-img' src='img/file.jpg'>
+												<div>
+													<a :href='msg.getFile().url()'>{{msg.getFile().name()}}</a>
+													<div>{{msg.getFile().size()}}</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- 设置页面 -->
+					<div class="page cached toolbar-fixed" data-page="settings">
+						<div class="page-content">
+							<div class='scroll-wrap' id='settings-scroll'>
+								<div class="list-block">
+									<ul>
+										<li>
+											<div class="item-content">
+												<div class="item-media"><i class="icon icon-form-toggle"></i></div>
+												<div class="item-inner">
+													<div class="item-title label">enter发送</div>
+													<div class="item-input">
+														<label class="label-switch">
+														    <input type="checkbox" v-model="options.enterSend" v-on:change="saveOp">
+														    <div class="checkbox"></div>
+														</label>
+													</div>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+
+								<div class="list-block">
+									<ul>
+										<li>
+											<div class="item-content">
+												<div class="item-media"><i class="icon icon-form-toggle"></i></div>
+												<div class="item-inner">
+													<div class="item-title label">夜间模式</div>
+													<div class="item-input">
+														<label class="label-switch">
+														    <input type="checkbox" v-model="options.nightMode" v-on:change="saveOp">
+														    <div class="checkbox"></div>
+														</label>
+													</div>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+
+								<div class="list-block">
+									<ul>
+										<li class="align-top">
+											<div class="item-content">
+												<div class="item-inner">
+													<div class="item-title label">反馈建议</div>
+													<div class="item-input">
+														<textarea id='feedback-area' v-on:change='sendFeedback'></textarea>
+													</div>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="login-screen modal-in">
+			<div class="view">
+				<div class="page">
+					<div class="page-content login-screen-content">
+						<div class="login-screen-title">匿名聊天</div>
+
+						<!--登录-->
+						<form id='sign-in-form' v-show="!showSignUp">
+							<div class="list-block">
+								<ul>
+									<li class="item-content">
+										<div class="item-media"><i class="icon icon-form-name"></i></div>
+										<div class="item-inner">
+											<div class="item-title label">用户名</div>
+											<div class="item-input">
+												<input type="text" placeholder="用户名" v-model="userName">
+											</div>
+										</div>
+									</li>
+									<li class="item-content">
+										<div class="item-media"><i class="icon icon-form-password"></i></div>
+										<div class="item-inner">
+											<div class="item-title label">密码</div>
+											<div class="item-input">
+												<input id='sign-in-password' type="password" placeholder="不少于6位" v-model="password">
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div class='content-block'>
+								<div class="row">
+									<div class="col-50">
+										<button id='open-sign-up' type="button" class="button button-big button-fill color-lightblue">注册</button>
+									</div>
+									<div class="col-50">
+										<button class="button button-big button-fill color-green">登录</button>
+									</div>
+								</div>
+							</div>
+						</form>
+
+						<!--注册-->
+						<form id='sign-up-form' v-show="showSignUp" style='display:none'>
+							<div class="list-block">
+								<ul>
+									<li class="item-content">
+										<div class="item-media"><i class="icon icon-form-name"></i></div>
+										<div class="item-inner">
+											<div class="item-title label">用户名</div>
+											<div class="item-input">
+												<input type="text" placeholder="用户名" v-model="signUp.userName">
+											</div>
+										</div>
+									</li>
+									<li class="item-content">
+										<div class="item-media"><i class="icon icon-form-password"></i></div>
+										<div class="item-inner">
+											<div class="item-title label">密码</div>
+											<div class="item-input">
+												<input type="password" placeholder="不少于6位" v-model="signUp.password">
+											</div>
+										</div>
+									</li>
+									<li class="item-content">
+										<div class="item-media"><i class="icon icon-form-password"></i></div>
+										<div class="item-inner">
+											<div class="item-title label">确认密码</div>
+											<div class="item-input">
+												<input type="password" placeholder="" v-model="signUp.password2">
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+							<div class='content-block'>
+								<div class="row">
+									<div class="col-50">
+										<button id='back-sign-in' type="button" class="button button-big button-fill color-lightblue">返回</button>
+									</div>
+									<div class="col-50">
+										<button class="button button-big button-fill color-green">注册</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id='attach-picker' class="picker-modal attach-picker">
+			<div class="toolbar">
+				<div class="toolbar-inner">
+					<div class="left"></div>
+					<div class="right">
+						<a href="#" class="link close-picker">取消</a>
+					</div>
+				</div>
+			</div>
+			<div class="picker-modal-inner">
+				<div class="list-block inset">
+					<div class='row'>
+						<label class='button col-50'>图片<input id='img-input' type='file' accept='image/*' class='hidden'></label>
+						<label class='button col-50'>文件<input id='file-input' type='file' class='hidden'></label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="https://unpkg.com/framework7@1.6.4/dist/js/framework7.min.js"></script>
+		<script src="https://unpkg.com/vue@1.0.28/dist/vue.min.js"></script>
+		<script src="https://unpkg.com/leancloud-storage@1.5.5/dist/av-min.js"></script>
+		<script src="js/realtime.browser.min.js"></script>
+		<script src="js/typed-messages.min.js"></script>
+		<script src="js/index.js"></script>
+	</body>
+
+</html>

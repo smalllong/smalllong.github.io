@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+      touch-action: manipulation;
+    }
+    #bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      line-height: 2;
+      margin-bottom: env(safe-area-inset-bottom);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    div {
+      background-color: #bbb;
+      margin: 20px;
+      height: 200px;
+    }
+    div:active {
+      background-color: aqua;
+    }
+    div.tap {
+      -webkit-tap-highlight-color: brown;
+    }
+    .blue {
+      background-color: aqua;
+    }
+    button {
+      width: 70%;
+      height: 32px;
+    }
+    button:active {
+      background-color: red;
+    }
+    button.tap {
+      -webkit-tap-highlight-color: red;
+    }
+  </style>
+  <script>
+    function log() {
+      document.body.classList.toggle('blue')
+    }
+  </script>
+</head>
+<body>
+  <div>without hack</div>
+  <div ontouchstart>ontouchstart</div>
+  <div class="tap">-webkit-tap-highlight-color</div>
+  <div>
+    <button>without hack</button>
+  </div>
+  <div>
+    <button ontouchstart>ontouchstart</button>
+  </div>
+  <div>
+    <button class="tap">-webkit-tap-highlight-color</button>
+  </div>
+  <div></div>
+  <div></div>
+  <button id=bar onclick='log()'> click me </button>
+</body>
+</html>

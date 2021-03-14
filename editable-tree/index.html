@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+	html, body {
+		background-color: #000;
+		color: #fff;
+	}
+
+    .node rect {
+        cursor: pointer;
+        fill: #fff;
+        fill-opacity: .6;
+        stroke: #3182bd;
+        stroke-width: 1px;
+    }
+
+    .node text {
+		fill: #fff;
+        font: 16px sans-serif;
+        pointer-events: none;
+    }
+	
+	.node polygon {
+		stroke: rgba(0,0,0,0);
+		stroke-width: 2px;
+	}
+	.node polygon:hover {
+		stroke: #8f8;
+		stroke-width: 2px;
+	}
+	
+	
+
+</style>
+    <script src="../js/jquery.min.js"></script>
+	<script src="../js/d3.v3.min.js"></script>
+</head>
+<body>
+<div>
+	<a href='../index.html'>Back</a>
+</div>
+<form id="tree-form" name="tree-form" action="" method="get">
+    <label>name:<input id="tree-str" type="text" /></label>
+    <label><input name="tree-opt" type="radio" value="1" />添加节点</label>
+    <label><input name="tree-opt" type="radio" value="2" />删除节点</label>
+    <label><input name="tree-opt" type="radio" value="3" />修改节点</label>
+    <label><input name="tree-opt" type="radio" value="4" />上移节点</label>
+    <label><input name="tree-opt" type="radio" value="5" />下移节点</label>
+</form>
+<footer>inspired by <a href="http://bl.ocks.org/mbostock/1093025">Collapsible Indented Tree</a></footer>
+<script>
+
+    var margin = {top: 30, right: 20, bottom: 30, left: 30},
+            width = document.body.clientWidth - margin.left - margin.right,
+            barHeight = 30,
+            barWidth = width * .8;
+
+    var i = 0,
+			id,
+            duration = 400,
+            root,
+            current,
+			attrs = ['type','href'];
+
+    var tree = d3.layout.tree()
+            .nodeSize([0, 20]);
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			
+    attrs.forEach(function(e,i){
+        $('#tree-form').append('<br /><label>'+e+': <input id="tree-attr-'+e+'" type="text"/></label>');
+    })
+    $('#tree-form').append('<input type="button" id="tree-set-attr" value="确认修改" />');
+    $('#tree-set-attr').click(function(){
+		if(current.attributes==undefined) current.attributes = {};
+        attrs.forEach(function(e,i){
+            current.attributes[e] = $('#tree-attr-'+e).val();
+        })
+        current.name = $('#tree-str').val();
+    })
+
+    d3.json("flare.json", function (error, flare) {
+        if (error) throw error;
+
+        flare.x0 = 0;
+        flare.y0 = 0;
+        update(root = flare);
+    });
+
+    function update(source) {
+
+        // Compute the flattened node list. TODO use d3.layout.hierarchy.
+        var nodes = tree.nodes(root);
+		console.log(nodes);
+
+        var height = Math.max(500, nodes.length * barHeight + margin.top + margin.bottom);
+
+        d3.select("svg").transition()
+                .duration(duration)
+                .attr("height", height);
+
+        d3.select(self.frameElement).transition()
+                .duration(duration)
+                .style("height", height + "px");
+
+        // Compute the "layout".
+        nodes.forEach(function (n, i) {
+            n.x = i * barHeight;
+        });
+
+        // Update the nodes…
+        var node = svg.selectAll("g.node")
+                .data(nodes, function (d) {
+                    return d.id || (d.id = ++i);
+                });
+
+        var nodeEnter = node.enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) {
+                    return "translate(" + source.y0 + "," + source.x0 + ")";
+                })
+                .style("opacity", 1e-6);
+
+        // Enter any new nodes at the parent's previous position.
+        nodeEnter.append("polygon")
+                .attr("points", -0.8*barHeight+','+-barHeight/2+' '+-0.8*barHeight+','+barHeight/2+' '+-barHeight/8+','+0)
+				.attr("transform",function(d){
+                    return d.children?"rotate(45,"+-barHeight/2+",0)":"rotate(0)";
+                })
+                .style("fill", color)
+                .style("display", function(d){
+                    return d.children || d._children ? null:'none';
+                })
+                .on("click", click);
+
+        nodeEnter.append("rect")
+                .attr("y", -barHeight / 2)
+                .attr("height", barHeight)
+                .attr("width", barWidth)
+                .style("fill", color)
+                .on("click", opration);
+
+        nodeEnter.append("text")
+                .attr("dy", 3.5)
+                .attr("dx", 5.5)
+                .text(function (d) {
+                    return d.name;
+                });
+
+        // Transition nodes to their new position.
+        nodeEnter.transition()
+                .duration(duration)
+                .attr("transform", function (d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                })
+                .style("opacity", 1);
+
+        node.transition()
+                .duration(duration)
+                .attr("transform", function (d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                })
+                .style("opacity", 1)
+                .select("rect")
+                .style("fill", color);
+
+        node.select("polygon").transition()
+                .duration(duration)
+                .style('display', hidePolygon)
+                .style("fill", color)
+                .attr("transform",function(d){
+                    return d.children?"rotate(45,"+-barHeight/2+",0)":"rotate(0)";
+                });
+
+        // Transition exiting nodes to the parent's new position.
+        node.exit().transition()
+                .duration(duration)
+                .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+                .style("opacity", 1e-6)
+                .remove();
+
+        // Stash the old positions for transition.
+        nodes.forEach(function (d) {
+            d.x0 = d.x;
+            d.y0 = d.y;
+        });
+		console.log(source);
+    }
+
+    // Toggle children on click.
+    function click(d) {
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
+        update(d);
+    }
+
+    function opration(d) {
+        var p = d.parent;
+        switch($('input[name=tree-opt]:checked').val()) {
+            case '1':
+                if(typeof(d.children)=='undefined') d.children=[];
+                d.children.push({id:(new Date()).getTime(),name:$('#tree-str').val()});
+                update(d);
+                return;
+            case '2':
+                p.children.forEach(function(e,i){
+                    if(e.id==d.id) p.children.splice(i,1);
+                })
+                update(p);
+                return;
+            case '3':
+                current = d;
+                $('#tree-str').val(d.name);
+                attrs.forEach(function(e,i){
+                    $('#tree-attr-'+e).val(d.attributes==undefined?'':(d.attributes[e]!=undefined? d.attributes[e]:''));
+                })
+                return;
+            case '4':
+                for(var i=0;i< p.children.length;i++) {
+                    var e = p.children[i];
+                    if(e.id == d.id && i!=0) {
+                        var tmp = p.children[i-1];
+                        p.children[i-1] = e;
+                        p.children[i] = tmp;
+                        break;
+                    }
+                }
+                update(p);
+                return;
+            case '5':
+                for(var i=0;i< p.children.length;i++) {
+                    var e = p.children[i];
+                    if(e.id == d.id && i!= p.children.length-1) {
+                        var tmp = p.children[i+1];
+                        p.children[i+1] = e;
+                        p.children[i] = tmp;
+                        break;
+                    }
+                }
+                update(p);
+                return;
+            default:
+                return;
+        }
+    }
+
+    function hidePolygon(d) {
+        return d.children || d._children ? null:'none';
+    }
+
+    function color(d) {
+        return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
+    }
+
+</script>

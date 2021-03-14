@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>上海摩天地图</title>
+	<style type="text/css">
+		html {
+			height: 100%
+		}
+
+		body {
+			height: 100%;
+			margin: 0px;
+			padding: 0px
+		}
+
+		#container {
+			height: 100%
+		}
+
+		.BMapLabel {
+			padding: 0 !important;
+			transform: translate(-50%, -50%);
+			text-align: center;
+		}
+
+		.buildings {
+			background-color: rgba(255, 255, 255, 0.8);
+			backdrop-filter: blur(4px);
+			font-size: 12px;
+			position: fixed;
+			top: 10px;
+			left: 10px;
+			max-width: calc(100% - 150px);
+			overflow: auto;
+			white-space: nowrap;
+		}
+		.buildings-item {
+			background-color: #fff;
+			cursor: pointer;
+			display: inline-block;
+			margin: 4px;
+			min-width: 4em;
+		}
+		.buildings-item:active {
+			background-color: #abc;
+		}
+	</style>
+	<script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=6cZei032t8UyG2SWxWmXF01NXmIDGx5o">
+	</script>
+</head>
+
+<body>
+	<div id="container"></div>
+	<script src='../js/lightue_newest.js'></script>
+	<script type="text/javascript">
+		var map = new BMap.Map("container")
+		map.centerAndZoom(new BMap.Point(121.48, 31.23), 13)
+		map.enableScrollWheelZoom(true)
+		map.addControl(new BMap.OverviewMapControl())
+		map.addControl(new BMap.ScaleControl())
+		map.addControl(new BMap.MapTypeControl())
+		map.addControl(new BMap.GeolocationControl())
+
+		var skyscrapers = [
+			// [经度，纬度，名称，总高度，结构高度]
+			[121.5121, 31.239, '上海中心', 632, 580],
+			[121.5145, 31.24, '环球金融中心', 492],
+			[121.5126, 31.2408, '金茂大厦', 420],
+			[121.5064, 31.2454, '东方明珠', 468, 350],
+			[121.5046, 31.2548, '白玉兰广场', 320],
+			[121.4513, 31.228, '会德丰广场', 298],
+			[121.4608, 31.234, '恒隆广场', 288],
+			[121.5173, 31.2411, '信息大楼', 288],
+			[121.4763, 31.2364, '明天广场', 284],
+			[121.4808, 31.1764, 'sk大厦', 275],
+			[121.5132, 31.2468, '时代金融中心', 275],
+			[121.4561, 31.2303, '嘉里中心', 260],
+			[121.5089, 31.2427, '国金中心', 260],
+			[121.482, 31.2404, '世茂广场', 333, 247],
+			[121.48, 31.2297, '香港新世界大厦', 278, 230],
+			[121.5106, 31.2448, '交银金融大厦', 265, 230],
+			[121.4833, 31.2387, '来福士广场', 264, 222],
+			[121.4232, 31.2253, '长宁龙之梦', 218],
+			[121.4542, 31.2292, '越洋广场', 210, 210],
+			[121.4220, 31.2441, '长城大厦', 180],
+		],
+		points = []
+
+		for (var i in skyscrapers) {
+			var skyscraper = skyscrapers[i]
+			points.push(new BMap.Point(skyscraper[0], skyscraper[1]))
+			map.addOverlay(new BMap.Label(skyscraper[2]+'<br>'+skyscraper[3]+(skyscraper[4]?'/'+skyscraper[4]:''), {
+				position: points[i]
+			}))
+		}
+
+		var vm = Lightue({
+			buildings: skyscrapers.map(function(s, i) {
+				return {
+					name: s[2],
+					length: s[3],
+					lengthReal: s[4] || s[3],
+					onclick: function(e) {
+						map.setCenter(points[i])
+					}
+				}
+			})
+		})
+	</script>
+</body>
+
+</html>

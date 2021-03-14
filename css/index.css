@@ -1,0 +1,33 @@
+html,
+body {
+  background-color: #333;
+  color: #fff;
+}
+.tiles {
+  font-weight: bold;
+  text-align: center;
+}
+.tiles-item {
+  border-radius: 12px;
+  box-shadow: 0 8px 8px #000;
+  color: #fff;
+  display: inline-block;
+  width: 160px;
+  height: 160px;
+  padding: 8px;
+  margin: 16px;
+  text-align: left;
+  text-decoration: none;
+  transition: .3s;
+  vertical-align: middle;
+}
+.tiles-item:hover {
+  box-shadow: 0 16px 16px #000;
+  filter: brightness(1.2);
+  transform: translateY(-8px);
+}
+.tile-img {
+  margin-top: 10px;
+  max-width: 110%;
+  max-height: 110%;
+}

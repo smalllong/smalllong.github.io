@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<style type="text/css">
+#image-cover {
+	background-color: rgba(0,0,0,0.7);
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	text-align: center;
+	white-space: nowrap;
+}
+#image-cover.hidden {
+	display: none;
+}
+#image-cover-img {
+	vertical-align: middle;
+}
+.verticalAlign{
+	vertical-align:middle;
+	display:inline-block;
+	height:100%; width:1px;
+	margin-left:-1px;
+}
+</style>
+<script language="javascript">
+function bigimg(i) {
+	var c = i.childNodes;
+	for (var a = 0; a < c.length; a++) {
+		if (c[a].nodeName=='IMG')
+			i = c[a];
+	}
+	var zoom = parseInt(i.style.zoom,10)||100;
+	zoom += event.wheelDelta / 6;
+	if(zoom > 0 )
+	i.style.zoom=zoom+'%';
+	return false;
+}
+function showCover(i) {
+	document.getElementById('image-cover-img').setAttribute('src', i.getAttribute('src'));
+	document.getElementById('image-cover').classList.remove('hidden');
+}
+function hideCover(i) {
+	var c = i.childNodes;
+	for (var a = 0; a < c.length; a++) {
+		if (c[a].nodeName=='IMG')
+			i = c[a];
+	}
+	document.getElementById('image-cover-img').setAttribute('src', '');
+	document.getElementById('image-cover').classList.add('hidden');
+}
+</script>
+</head>
+<body>
+<img src="http://www.codefans.net/jscss/demoimg/wall7.jpg" onclick='showCover(this)'>
+<div id='image-cover' class='hidden' onmousewheel="return bigimg(this)" onclick='hideCover(this)'>
+	<span class="verticalAlign"></span>
+	<img id='image-cover-img' src="">
+</div>
+</body>
+</html>

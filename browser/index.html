@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browser Info</title>
+  <style>
+    body {
+      font-size: 20px;
+    }
+    .test {
+      background-color: #ddd;
+      margin: 20px;
+      height: 200px;
+    }
+    .root {
+      position: fixed;
+      width: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <script src='../js/lightue.min.js'></script>
+  <script>
+    var vm = Lightue({
+      infos: [
+        'window.innerWidth: ' + window.innerWidth,
+        'window.innerHeight: ' + window.innerHeight,
+        'window.screen.width: ' + window.screen.width,
+        'window.screen.height: ' + window.screen.height,
+        'window.devicePixelRatio: ' + window.devicePixelRatio,
+        'navigator.userAgent: ' + navigator.userAgent,
+      ],
+      position: {
+        accuracy: 'accuracy: ',
+        latitude: 'latitude: ',
+        longitude: 'longitude: ',
+      },
+      event: {
+        name: ''
+      },
+    })
+    navigator.geolocation.getCurrentPosition((result) => {
+      vm.position.accuracy += result.coords.accuracy
+      vm.position.latitude += result.coords.latitude
+      vm.position.longitude += result.coords.longitude
+      vm.position.$render()
+    })
+    window.onresize = function(e) {
+      vm.infos[0] = 'window.innerWidth: ' + window.innerWidth
+      vm.infos[1] = 'window.innerHeight: ' + window.innerHeight
+      vm.event.name = 'resize'
+      vm.infos.$render()
+    }
+    document.body.ontouchstart = function(e) {
+      vm.event.name = 'touchstart'
+      vm.event.$render()
+    }
+    document.body.ontouchmove = function(e) {
+      vm.event.name = 'touchmove'
+      vm.event.$render()
+    }
+    document.body.ontouchend = function(e) {
+      vm.event.name = 'touchend'
+      vm.event.$render()
+    }
+    document.body.onclick = function(e) {
+      vm.event.name = 'click'
+      vm.event.$render()
+    }
+  </script>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+  <div class='test'></div>
+</body>
+
+</html>
