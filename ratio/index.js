@@ -1,16 +1,16 @@
-var vm = Lightue({
+var L = Lightue
+
+var vm = L({
   inputs: {
-    width: {
-      $tag: 'input',
+    width: L.input({
       _type: 'number',
       oninput: showRatio,
-    },
+    }),
     $$: ':',
-    height: {
-      $tag: 'input',
+    height: L.input({
       _type: 'number',
       oninput: showRatio,
-    },
+    }),
   },
   result: {
     label: '简化后比值为',

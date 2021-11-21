@@ -2,29 +2,39 @@ html,
 body {
   background-color: #333;
   color: #fff;
+  height: 100%;
+  margin: 0;
+}
+.root {
+  height: 100%;
+  perspective: 1400px;
+  overflow: auto;
 }
 .tiles {
   font-weight: bold;
   text-align: center;
+  padding: 8px;
 }
 .tiles-item {
   border-radius: 12px;
   box-shadow: 0 8px 8px #000;
   color: #fff;
   display: inline-block;
-  width: 160px;
-  height: 160px;
+  width: 240px;
+  height: 240px;
   padding: 8px;
-  margin: 16px;
+  margin: -8px 16px -8px 16px;
+  position: relative;
   text-align: left;
   text-decoration: none;
+  transform: translateZ(-50px) rotateX(-40deg);
   transition: .3s;
   vertical-align: middle;
 }
 .tiles-item:hover {
   box-shadow: 0 16px 16px #000;
   filter: brightness(1.2);
-  transform: translateY(-8px);
+  transform: none;
 }
 .tile-img {
   margin-top: 10px;

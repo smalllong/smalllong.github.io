@@ -9,11 +9,6 @@
     body {
       font-size: 20px;
     }
-    .test {
-      background-color: #ddd;
-      margin: 20px;
-      height: 200px;
-    }
     .root {
       position: fixed;
       width: 100%;
@@ -22,7 +17,7 @@
 </head>
 
 <body>
-  <script src='../js/lightue.min.js'></script>
+  <script src='https://unpkg.com/lightue@0.1.1/lightue.min.js'></script>
   <script>
     var vm = Lightue({
       infos: [
@@ -38,9 +33,6 @@
         latitude: 'latitude: ',
         longitude: 'longitude: ',
       },
-      event: {
-        name: ''
-      },
     })
     navigator.geolocation.getCurrentPosition((result) => {
       vm.position.accuracy += result.coords.accuracy
@@ -51,33 +43,9 @@
     window.onresize = function(e) {
       vm.infos[0] = 'window.innerWidth: ' + window.innerWidth
       vm.infos[1] = 'window.innerHeight: ' + window.innerHeight
-      vm.event.name = 'resize'
       vm.infos.$render()
     }
-    document.body.ontouchstart = function(e) {
-      vm.event.name = 'touchstart'
-      vm.event.$render()
-    }
-    document.body.ontouchmove = function(e) {
-      vm.event.name = 'touchmove'
-      vm.event.$render()
-    }
-    document.body.ontouchend = function(e) {
-      vm.event.name = 'touchend'
-      vm.event.$render()
-    }
-    document.body.onclick = function(e) {
-      vm.event.name = 'click'
-      vm.event.$render()
-    }
   </script>
-  <div class='test'></div>
-  <div class='test'></div>
-  <div class='test'></div>
-  <div class='test'></div>
-  <div class='test'></div>
-  <div class='test'></div>
-  <div class='test'></div>
 </body>
 
 </html>

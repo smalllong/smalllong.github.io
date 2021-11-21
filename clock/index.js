@@ -1,19 +1,19 @@
-var now = new Date(), rootTop = Math.floor(Math.random()*(window.innerHeight - 120))
-
+var S = Lightue.useState({
+    now: new Date(),
+    rootTop: Math.floor(Math.random()*(window.innerHeight - 120)),
+})
 var vm = new Lightue({
-    get _style() {return 'top: '+rootTop+'px'},
-    get time() {return now.toLocaleTimeString()},
-    get date() {return now.toLocaleDateString()},
+    get _style() {return 'top: '+S.rootTop+'px'},
+    get time() {return S.now.toLocaleTimeString()},
+    get date() {return S.now.toLocaleDateString()},
 })
 
 setInterval(function() {
-    now = new Date()
-    if (now.getSeconds() == 0)
-        rootTop = Math.floor(Math.random()*(window.innerHeight - 120))
-    vm.$render()
+    S.now = new Date()
+    if (S.now.getSeconds() == 0)
+        S.rootTop = Math.floor(Math.random()*(window.innerHeight - 120))
 }, 1000)
 
 window.onresize = function() {
-    rootTop = Math.floor(Math.random()*(window.innerHeight - 120))
-    vm.$render()
+    S.rootTop = Math.floor(Math.random()*(window.innerHeight - 120))
 }
