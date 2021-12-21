@@ -17,8 +17,15 @@
 </head>
 
 <body>
-  <script src='https://unpkg.com/lightue@0.1.1/lightue.min.js'></script>
+  <script src='https://unpkg.com/lightue@0.1.2/lightue.min.js'></script>
   <script>
+    var S = Lightue.useState({
+      position: {
+        accuracy: '',
+        latitude: '',
+        longitude: '',
+      }
+    })
     var vm = Lightue({
       infos: [
         'window.innerWidth: ' + window.innerWidth,
@@ -29,16 +36,13 @@
         'navigator.userAgent: ' + navigator.userAgent,
       ],
       position: {
-        accuracy: 'accuracy: ',
-        latitude: 'latitude: ',
-        longitude: 'longitude: ',
+        accuracy: () => 'accuracy: '+S.position.accuracy,
+        latitude: () => 'latitude: '+S.position.latitude,
+        longitude: () => 'longitude: '+S.position.longitude,
       },
     })
     navigator.geolocation.getCurrentPosition((result) => {
-      vm.position.accuracy += result.coords.accuracy
-      vm.position.latitude += result.coords.latitude
-      vm.position.longitude += result.coords.longitude
-      vm.position.$render()
+      S.position = result.coords
     })
     window.onresize = function(e) {
       vm.infos[0] = 'window.innerWidth: ' + window.innerWidth

@@ -3,9 +3,9 @@ var S = Lightue.useState({
     rootTop: Math.floor(Math.random()*(window.innerHeight - 120)),
 })
 var vm = new Lightue({
-    get _style() {return 'top: '+S.rootTop+'px'},
-    get time() {return S.now.toLocaleTimeString()},
-    get date() {return S.now.toLocaleDateString()},
+    _style: () => 'top: '+S.rootTop+'px',
+    time: () => S.now.toLocaleTimeString(),
+    date: () => S.now.toLocaleDateString(),
 })
 
 setInterval(function() {

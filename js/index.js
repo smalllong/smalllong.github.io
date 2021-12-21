@@ -1,7 +1,7 @@
-function randomColor() {
+function randomColor(initS, initL) {
   var h = Math.floor(Math.random()*256),
-    s = 80+Math.ceil(20*Math.random()),
-    l = 25+Math.round(20*Math.random())
+    s = initS+Math.ceil(20*Math.random()),
+    l = initL+Math.round(20*Math.random())
   return 'hsl('+h+','+s+'%,'+l+'%)'
 }
 
@@ -9,7 +9,7 @@ function Tile(title, link, img) {
   return {
     $tag: 'a',
     _href: link,
-    _style: 'background-color: '+randomColor(),
+    _style: 'background-color: '+randomColor(80, 25),
     tileTitle: title,
     tileImg: img?{
       $tag: 'img',
@@ -19,6 +19,7 @@ function Tile(title, link, img) {
 }
 
 var vm = Lightue({
+  _style: 'background-image: linear-gradient('+randomColor(20, 10)+','+randomColor(20, 10)+')',
   tiles: [
     Tile('Skyscrapers Map in Shanghai', 'sh-skyscrapers/index.html'),
     Tile('get your browser information', 'browser/index.html', 'browser/index.png'),
