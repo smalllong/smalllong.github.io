@@ -7,13 +7,15 @@ body {
 }
 .root {
   height: 100%;
-  perspective: 1400px;
-  overflow: auto;
 }
 .tiles {
+  box-sizing: border-box;
   font-weight: bold;
   text-align: center;
   padding: 8px;
+  height: 100%;
+  overflow: auto;
+  perspective: 1400px;
 }
 .tiles-item {
   border-radius: 12px;

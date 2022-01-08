@@ -1,46 +1,49 @@
-var L = Lightue
+var L = Lightue;
 
 function toolButton(content, onclick) {
-	return L.button({
-		_type: 'button',
-		onclick: onclick,
-		$$: content
-	})
+  return L.button({
+    _type: "button",
+    onclick: onclick,
+    $$: content,
+  });
 }
 
-var columnCount = 3, rowCount = 3;
-var table = [];
-for (var i=0; i<rowCount; i++) {
-	var row = L.tr([]);
-	for (var j=0; j<columnCount; j++) {
-		row.push(L.td());
-	}
-	table.push(row)
-}
+var S = L.useState({
+  table: [
+    ["", "", ""],
+    ["", "", ""],
+    ["", "", ""],
+  ],
+});
 
 var vm = L({
-	toolbar: {
-		newRow: toolButton('新行', function(e) {
-			rowCount ++;
-			var newRow = L.tr([]);
-			for (var i=0; i<columnCount; i++) {
-				newRow.push(L.td());
-			}
-			vm.mainTable.$$.push(newRow);
-		}),
-		newColumn: toolButton('新列', function(e) {
-			columnCount ++;
-			vm.mainTable.$$.forEach(function(row, i) {
-				row.push(L.td())
-			})
-		})
-	},
-	mainTable: L.table({
-		_border: '1',
-		_contenteditable: 'true',
-		$$: table,
-		onclick: function(e) {
-			console.log(e.target)
-		}
-	})
-})
+  toolbar: {
+    newRow: toolButton("新行", function (e) {
+      S.table.push(S.table[0].map(() => ""));
+      S.table = JSON.parse(JSON.stringify(S.table));
+    }),
+    newColumn: toolButton("新列", function (e) {
+      S.table.forEach((row) => row.push(""));
+      S.table = JSON.parse(JSON.stringify(S.table));
+    }),
+  },
+  mainTable: L.table({
+    _border: "1",
+    $$: () =>
+      S.table.map((row, i) =>
+        L.tr({
+          $$: row.map((cell, j) =>
+            L.td({
+              $$: cell,
+              _contenteditable: "true",
+              _dataPos: () => i + "," + j,
+            })
+          ),
+        })
+      ),
+    oninput: function (e) {
+      var pos = e.target.dataset.pos.split(",");
+      S.table[pos[0]][pos[1]] = e.target.textContent;
+    },
+  }),
+});

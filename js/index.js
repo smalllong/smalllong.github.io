@@ -29,7 +29,7 @@ var vm = Lightue({
     Tile('Zoomable full screen photo viewer', 'photoViewer/index.html'),
     Tile('Simple polygon test', 'simplePolygon/index.html'),
     Tile('Chat', 'chat/index.html'),
-    Tile('Compute simple ratio', 'ratio/index.html'),
+    Tile('Simple sheet editor', 'spreadsheet/index.html'),
     Tile('A colorful ball fountain with motion blur', 'fountain/index.html'),
     Tile('A editable full calendar', 'editable-full-calendar/index.html'),
     Tile('a d3js editable tree', 'editable-tree/index.html', 'img/editable-tree.png'),
