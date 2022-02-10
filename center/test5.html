@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			html, body {
+				height: 100%;
+				width: 100%;
+				margin: 0;
+			}
+			#parent {
+				width: 100%;
+				height: 100%;
+				background-color: #f00;
+				text-align: center;
+			}
+			#parent::before {
+				content: '';
+				height: 100%;
+			}
+			#parent::before, #child {
+				display: inline-block;
+				vertical-align: middle;
+			}
+			#child {
+				width: 800px;
+				height: 600px;
+				background-color: #0f0;
+				text-align: initial;
+				white-space: pre;
+			}
+		</style>
+	</head>
+	<body>
+		<div id='parent'><div id='child'>
+			Centering using a full height sibling:
+			#parent {
+				text-align: center;
+			}
+			#parent::before {
+				content: '';
+				height: 100%;
+			}
+			#parent::before, #child {
+				display: inline-block;
+				vertical-align: middle;
+			}
+			Pros:
+				can see full content when child is larger than parent
+			Cons:
+				complex CSS
+				to prevent ghost white space, child need some hacks (put child close to parent in html, or set font-size to 0)
+		</div></div>
+	</body>
+</html>

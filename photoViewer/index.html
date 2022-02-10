@@ -14,17 +14,18 @@
 	text-align: center;
 	white-space: nowrap;
 }
+#image-cover::before {
+	content: '';
+	height: 100%;
+	vertical-align: middle;
+	display: inline-block;
+}
 #image-cover.hidden {
 	display: none;
 }
 #image-cover-img {
+	image-rendering: crisp-edges;
 	vertical-align: middle;
-}
-.verticalAlign{
-	vertical-align:middle;
-	display:inline-block;
-	height:100%; width:1px;
-	margin-left:-1px;
 }
 </style>
 <script language="javascript">
@@ -56,9 +57,8 @@ function hideCover(i) {
 </script>
 </head>
 <body>
-<img src="http://www.codefans.net/jscss/demoimg/wall7.jpg" onclick='showCover(this)'>
+<img src="https://cn.bing.com/th?id=OHR.SnowyBern_ZH-CN5472524801_1920x1080.jpg&rf=LaDigue_1920x1080.jpg" onclick='showCover(this)'>
 <div id='image-cover' class='hidden' onmousewheel="return bigimg(this)" onclick='hideCover(this)'>
-	<span class="verticalAlign"></span>
 	<img id='image-cover-img' src="">
 </div>
 </body>

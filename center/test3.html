@@ -13,21 +13,39 @@
 				width: 100%;
 				height: 100%;
 				background-color: #f00;
+				position: relative;
 			}
 			#child {
 				position: absolute;
 				top: 50%;
 				left: 50%;
-				width: 500px;
-				height: 200px;
+				width: 800px;
+				height: 600px;
 				background-color: #0f0;
 				transform: translate(-50%, -50%);
+				white-space: pre;
 			}
 		</style>
 	</head>
 	<body>
 		<div id='parent'>
-			<div id='child'>haha</div>
+			<div id='child'>
+				Centering using position: absolute
+				#parent {
+					position: relative;
+				}
+				#child {
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%, -50%);
+				}
+				Pros:
+					simple css and html
+				Cons:
+					when child is larger than parent, content is cut
+					sometimes the child content can be blur
+			</div>
 		</div>
 	</body>
 </html>

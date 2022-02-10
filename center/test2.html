@@ -16,18 +16,29 @@
 				display: flex;
 				align-items: center;
     			justify-content: center;
-    			overflow: auto;
 			}
 			#child {
-				width: 500px;
-				height: 200px;
+				width: 800px;
+				height: 600px;
 				background-color: #0f0;
+				white-space: pre;
 			}
 		</style>
 	</head>
 	<body>
 		<div id='parent'>
-			<div id='child'>haha</div>
+			<div id='child'>
+				Centering using display: flex
+				#parent {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+				}
+				Pros:
+					simple css and html
+				Cons:
+					when child is larger than parent, content is cut
+			</div>
 		</div>
 	</body>
 </html>
