@@ -31,8 +31,5 @@ var vm = Lightue({
     Tile('Chat', 'chat/index.html'),
     Tile('Simple sheet editor', 'spreadsheet/index.html'),
     Tile('A colorful ball fountain with motion blur', 'fountain/index.html'),
-    Tile('A editable full calendar', 'editable-full-calendar/index.html'),
-    Tile('a d3js editable tree', 'editable-tree/index.html', 'img/editable-tree.png'),
-    Tile('a d3js fan', 'fan/index.html', 'img/fanLite.png'),
   ]
 })
