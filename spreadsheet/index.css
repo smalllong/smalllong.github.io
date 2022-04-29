@@ -1,8 +1,45 @@
+body {
+	margin: 0;
+}
+
+.root {
+	height: calc(100vh - 16px);
+	overflow: auto;
+	padding: 8px;
+}
+
+.toolbar {
+	position: sticky;
+	top: 0;
+	left: 0;
+	margin-bottom: 8px;
+}
+
 table {
-	border-collapse: collapse;
+	border-spacing: 0;
 }
 
 td {
+	border: 1px solid #ddd;
 	min-width: 80px;
 	height: 1em;
+	position: relative;
+	outline: none;
+}
+
+td:focus, td.selected {
+	background-color: #dfd;
+}
+
+td.selected-top {
+	border-top: 1px solid green;
+}
+td.selected-left {
+	border-left: 1px solid green;
+}
+td.selected-right {
+	border-right: 1px solid green;
+}
+td.selected-bottom {
+	border-bottom: 1px solid green;
 }
