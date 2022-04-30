@@ -14,30 +14,114 @@ function between(value, min, range) {
   return value >= min && value < min + range
 }
 
-function getSelected(top0, left0, top1, left1) {
-  return {
-    top: Math.min(top0, top1),
-    left: Math.min(left0, left1),
-    height: Math.abs(top0 - top1) + 1,
-    width: Math.abs(left0 - left1) + 1,
-  }
-}
-
-function genArr(length) {
+function genArr(length, init) {
   return 's'
     .repeat(length)
     .split('')
-    .map(() => '')
+    .map(() => JSON.parse(JSON.stringify(init)))
+}
+
+var mergeManager = {
+  table: new Proxy([], {
+    get: function (src, key) {
+      if (src[key] == null) src[key] = []
+      return src[key]
+    },
+  }), // false: standalone cell, 0: merge header, arr: merged cell
+  isGoastCell: function (cell) {
+    return cell && !cell.isHeader
+  },
+  setSpans: function (src, rs, cs) {
+    if (typeof src == 'string') src = { v: src }
+    src.rs = rs
+    src.cs = cs
+    return src
+  },
+  split: function (top, left, height, width, tableState) {
+    var tableClone = JSON.parse(JSON.stringify(tableState.slice(top, top + height)))
+    this.loopArea(top, left, height, width, tableState, tableClone, (row, col, mcol) => {
+      if (this.table[row][col] && this.table[row][col].isHeader)
+        tableClone[row - top][mcol] = this.setSpans(tableClone[row - top][mcol], 1, 1)
+      else if (this.table[row][col]) tableClone[row - top].splice(mcol, 0, '')
+      this.table[row][col] = false
+    })
+  },
+  addMerge: function (top, left, height, width, tableState) {
+    var newMerge = [top, left, height, width]
+    this.split(...newMerge, tableState)
+    var tableClone = JSON.parse(JSON.stringify(tableState.slice(top, top + height)))
+    this.loopArea(...newMerge, tableState, tableClone, (row, col, mcol, header) => {
+      if (header) tableClone[0][mcol] = this.setSpans(tableClone[0][mcol], height, width)
+      else if (!header && !this.table[row][col]) tableClone[row - top].splice(mcol, 1)
+      this.table[row][col] = header ? { isHeader: true, rect: newMerge } : { rect: newMerge }
+    })
+  },
+  getVisualCol: function (row, col) {
+    var result = -1
+    for (; col >= 0; col--) {
+      result++
+      while (this.isGoastCell(this.table[row][result])) result++
+    }
+    return result
+  },
+  getModelCol: function (row, col) {
+    var result = 0
+    for (var i = 0; i < col; i++) {
+      if (!this.isGoastCell(this.table[row][i])) result++
+    }
+    return result
+  },
+  include: function (outer, inner) {
+    inner = inner && inner.rect
+    if (inner) {
+      if (inner[0] < outer[0]) {
+        outer[2] += outer[0] - inner[0]
+        outer[0] = inner[0]
+      }
+      if (inner[1] < outer[1]) {
+        outer[3] += outer[1] - inner[1]
+        outer[1] = inner[1]
+      }
+      if (inner[2] + inner[0] > outer[2] + outer[0]) outer[2] = inner[2] + inner[0] - outer[0]
+      if (inner[3] + inner[1] > outer[3] + outer[1]) outer[3] = inner[3] + inner[1] - outer[1]
+    }
+  },
+  getSelected: function (top0, left0, top1, left1) {
+    var result = [Math.min(top0, top1), Math.min(left0, left1), Math.abs(top0 - top1) + 1, Math.abs(left0 - left1) + 1],
+      lastResult = []
+    while (JSON.stringify(result) != JSON.stringify(lastResult)) {
+      lastResult = result.map((a) => a)
+      for (var i = result[1]; i < result[1] + result[3]; i++) {
+        this.include(result, this.table[result[0]][i])
+        this.include(result, this.table[result[0] + result[2] - 1][i])
+      }
+      for (var i = result[0] + 1; i < result[0] + result[2] - 1; i++) {
+        this.include(result, this.table[i][result[1]])
+        this.include(result, this.table[i][result[1] + result[3] - 1])
+      }
+    }
+    return { top: result[0], left: result[1], height: result[2], width: result[3] }
+  },
+  loopArea: function (top, left, height, width, tableState, tableClone, callback) {
+    for (var i = 0; i < height; i++) {
+      var mcol = 0
+      for (var j = 0; j < left + width; j++) {
+        if (between(j, left, left + width)) callback(top + i, j, mcol, i == 0 && j == left)
+        if (!this.isGoastCell(this.table[top + i][j])) mcol++
+      }
+      tableState[top + i] = tableClone[i]
+    }
+  },
 }
 
 var S = L.useState({
-  table: [genArr(5), genArr(5), genArr(5), genArr(5), genArr(5)],
+  table: genArr(16, genArr(8, '')),
   selected: {
     // based on visual pos
-    left: 0,
     top: 0,
-    width: 1,
+    left: 0,
     height: 1,
+    width: 1,
   },
   curColors: {
     bc: '#ffffff',
@@ -45,52 +129,19 @@ var S = L.useState({
   },
 })
 
-var combineInserts = [] // combined cells interts virtual cells, based on visual pos
-function removeInsert(top, left) {
-  for (var i = combineInserts.length - 1; i >= 0; i--) {
-    var insert = combineInserts[i]
-    if (insert[0] == top && insert[1] == left) {
-      combineInserts.splice(i, 1)
-    }
-  }
-}
-function getVisualPos(pos0, pos1) {
-  // model pos => visual pos
-  var tmp = [],
-    result = -1
-  for (var insert of combineInserts) {
-    if (insert[0] == pos0) {
-      for (var i = 0; i < insert[2]; i++) {
-        tmp[insert[1] + i] = true
-      }
-    }
-  }
-  for (; pos1 >= 0; pos1--) {
-    result++
-    while (tmp[result]) result++
-  }
-  return result
-}
-function getPos1(top, left) {
-  var td = document.querySelector('.main-table td[data-visual-pos="' + top + ',' + left + '"]')
-  if (td) return td.dataset.pos.split(',').map(Number)[1]
-  var tmp = [],
-    result = 0
-  for (var insert of combineInserts) {
-    if (insert[0] == top) {
-      for (var i = 0; i < insert[2]; i++) {
-        tmp[insert[1] + i] = true
-      }
-    }
-  }
-  for (var i = 0; i < left; i++) {
-    if (!tmp[i]) result++
-  }
-  return result
-}
-
 var vm = L({
   toolbar: {
+    open: L.input({
+      _type: 'file',
+      _accept: '.json5,text/json5',
+      onchange: function (e) {
+        var fr = new FileReader()
+        fr.readAsText(this.files[0])
+        fr.onload = function (e) {
+          S.table = JSON5.parse(fr.result)
+        }
+      },
+    }),
     newRow: toolButton('新行', function (e) {
       S.table.push(S.table[0].map(() => ''))
     }),
@@ -109,7 +160,7 @@ var vm = L({
       _type: 'color',
       $value: () => S.curColors.bc,
       onchange: function (e) {
-        var pos = [S.selected.top, getPos1(S.selected.top, S.selected.left)]
+        var pos = [S.selected.top, mergeManager.getModelCol(S.selected.top, S.selected.left)]
         var tmp = S.table[pos[0]][pos[1]]
         if (typeof tmp == 'string') tmp = { v: tmp }
         tmp.bc = e.target.value
@@ -120,7 +171,7 @@ var vm = L({
       _type: 'color',
       $value: () => S.curColors.fc,
       onchange: function (e) {
-        var pos = [S.selected.top, getPos1(S.selected.top, S.selected.left)]
+        var pos = [S.selected.top, mergeManager.getModelCol(S.selected.top, S.selected.left)]
         var tmp = S.table[pos[0]][pos[1]]
         if (typeof tmp == 'string') tmp = { v: tmp }
         tmp.fc = e.target.value
@@ -128,45 +179,10 @@ var vm = L({
       },
     }),
     combine: toolButton('合并', function (e) {
-      var pos = [S.selected.top, getPos1(S.selected.top, S.selected.left)]
-      var tmp = S.table[pos[0]][pos[1]]
-      if (typeof tmp == 'string') tmp = { v: tmp }
-      tmp.cs = S.selected.width
-      tmp.rs = S.selected.height
-      S.table[pos[0]][pos[1]] = tmp
-      for (let i = 0; i < S.selected.height; i++) {
-        if (i == 0) {
-          S.table[pos[0]].splice(pos[1] + 1, S.selected.width - 1)
-          if (S.selected.width > 1) combineInserts.push([pos[0], S.selected.left + 1, S.selected.width - 1])
-        } else {
-          var curRowPos1 = getPos1(pos[0] + i, S.selected.left)
-          S.table[pos[0] + i].splice(curRowPos1, S.selected.width)
-          combineInserts.push([pos[0] + i, S.selected.left, S.selected.width])
-        }
-        S.table[pos[0] + i] = JSON.parse(JSON.stringify(S.table[pos[0] + i]))
-      }
+      mergeManager.addMerge(S.selected.top, S.selected.left, S.selected.height, S.selected.width, S.table)
     }),
     split: toolButton('分解', function (e) {
-      var toSplit = document.querySelectorAll('td.selected[rowspan],td.selected[colspan]')
-      toSplit.forEach((cell) => {
-        var pos = cell.dataset.pos.split(',').map(Number),
-          visualPos = cell.dataset.visualPos.split(',').map(Number),
-          rowspan = Number(cell.getAttribute('rowspan') || '1'),
-          colspan = Number(cell.getAttribute('colspan') || '1')
-        S.table[pos[0]][pos[1]].cs = 1
-        S.table[pos[0]][pos[1]].rs = 1
-        for (var i = 0; i < rowspan; i++) {
-          if (i == 0) {
-            S.table[pos[0]].splice(pos[1] + 1, 0, ...genArr(colspan - 1))
-            removeInsert(pos[0], visualPos[1] + 1)
-          } else {
-            var curRowPos1 = getPos1(pos[0] + i, visualPos[1] + colspan)
-            S.table[pos[0] + i].splice(curRowPos1, 0, ...genArr(colspan))
-            removeInsert(pos[0] + i, visualPos[1])
-          }
-          S.table[pos[0] + i] = JSON.parse(JSON.stringify(S.table[pos[0] + i]))
-        }
-      })
+      mergeManager.split(S.selected.top, S.selected.left, S.selected.height, S.selected.width, S.table)
     }),
     save: toolButton('保存', function (e) {
       var link = document.createElement('a')
@@ -186,12 +202,12 @@ var vm = L({
               $$: () => (typeof cell == 'object' ? cell.v : cell),
               _contenteditable: 'true',
               _dataPos: () => i + ',' + j,
-              _dataVisualPos: () => i + ',' + getVisualPos(i, j),
+              _dataVisualPos: () => i + ',' + mergeManager.getVisualCol(i, j),
               _style: () => (cell.bc ? 'background-color:' + cell.bc : '') + (cell.fc ? ';color:' + cell.fc : ''),
               _colspan: () => cell.cs,
               _rowspan: () => cell.rs,
               _class: () => {
-                var pos1 = getVisualPos(i, j)
+                var pos1 = mergeManager.getVisualCol(i, j)
                 var inX = between(pos1, S.selected.left, S.selected.width)
                 var inY = between(i, S.selected.top, S.selected.height)
                 var results = []
@@ -221,7 +237,7 @@ var vm = L({
     onmousemove: function (e) {
       if (selecting) {
         var selectEnd = e.target.dataset.visualPos.split(',').map(Number)
-        S.selected = getSelected(...selectStart, ...selectEnd)
+        S.selected = mergeManager.getSelected(...selectStart, ...selectEnd)
       }
     },
     onmouseup: function (e) {
@@ -231,7 +247,7 @@ var vm = L({
       S.curColors.fc = curData.fc || '#000000'
       selecting = false
       var selectEnd = e.target.dataset.visualPos.split(',').map(Number)
-      S.selected = getSelected(...selectStart, ...selectEnd)
+      S.selected = mergeManager.getSelected(...selectStart, ...selectEnd)
     },
   }),
 })
