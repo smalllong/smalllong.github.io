@@ -16,8 +16,5 @@
     "url": "https://github.com/smalllong/smalllong.github.io/issues"
   },
   "homepage": "https://github.com/smalllong/smalllong.github.io#readme",
-  "devDependencies": {
-    "lodash": "^4.17.13",
-    "stylus": "^0.54.5"
-  }
+  "devDependencies": {}
 }

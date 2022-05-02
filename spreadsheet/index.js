@@ -18,7 +18,11 @@ function genArr(length, init) {
   return 's'
     .repeat(length)
     .split('')
-    .map(() => JSON.parse(JSON.stringify(init)))
+    .map(() => duplicate(init))
+}
+
+function duplicate(obj) {
+  return JSON.parse(JSON.stringify(obj))
 }
 
 var mergeManager = {
@@ -33,12 +37,22 @@ var mergeManager = {
   },
   setSpans: function (src, rs, cs) {
     if (typeof src == 'string') src = { v: src }
-    src.rs = rs
-    src.cs = cs
-    return src
+    rs > 1 ? (src.rs = rs) : delete src.rs
+    cs > 1 ? (src.cs = cs) : delete src.cs
+    return duplicate(src)
+  },
+  splitPaste: function (top, left, height, width, tableState) {
+    this.loopArea(top, left, height, width, tableState, null, (row, col) => {
+      if (this.isGoastCell(this.table[row][col])) {
+        if (this.table[row][col].rect[0] < top || this.table[row][col].rect[1] < left) {
+          this.split(...this.table[row][col].rect, tableState)
+        }
+      }
+    })
+    this.split(top, left, height, width, tableState)
   },
   split: function (top, left, height, width, tableState) {
-    var tableClone = JSON.parse(JSON.stringify(tableState.slice(top, top + height)))
+    var tableClone = duplicate(tableState.slice(top, top + height))
     this.loopArea(top, left, height, width, tableState, tableClone, (row, col, mcol) => {
       if (this.table[row][col] && this.table[row][col].isHeader)
         tableClone[row - top][mcol] = this.setSpans(tableClone[row - top][mcol], 1, 1)
@@ -48,11 +62,13 @@ var mergeManager = {
   },
   addMerge: function (top, left, height, width, tableState) {
     var newMerge = [top, left, height, width]
-    this.split(...newMerge, tableState)
-    var tableClone = JSON.parse(JSON.stringify(tableState.slice(top, top + height)))
+    tableState && this.split(...newMerge, tableState)
+    var tableClone = tableState && duplicate(tableState.slice(top, top + height))
     this.loopArea(...newMerge, tableState, tableClone, (row, col, mcol, header) => {
-      if (header) tableClone[0][mcol] = this.setSpans(tableClone[0][mcol], height, width)
-      else if (!header && !this.table[row][col]) tableClone[row - top].splice(mcol, 1)
+      if (tableClone) {
+        if (header) tableClone[0][mcol] = this.setSpans(tableClone[0][mcol], height, width)
+        else if (!header && !this.table[row][col]) tableClone[row - top].splice(mcol, 1)
+      }
       this.table[row][col] = header ? { isHeader: true, rect: newMerge } : { rect: newMerge }
     })
   },
@@ -106,11 +122,55 @@ var mergeManager = {
     for (var i = 0; i < height; i++) {
       var mcol = 0
       for (var j = 0; j < left + width; j++) {
-        if (between(j, left, left + width)) callback(top + i, j, mcol, i == 0 && j == left)
+        if (between(j, left, width)) callback(top + i, j, mcol, i == 0 && j == left)
         if (!this.isGoastCell(this.table[top + i][j])) mcol++
       }
-      tableState[top + i] = tableClone[i]
+      tableClone && (tableState[top + i] = tableClone[i])
     }
+  },
+  addRow: function (tableState) {
+    var cols = tableState[0].reduce((pre, cur) => pre + (cur.cs || 1), 0)
+    tableState.push(genArr(cols, ''))
+  },
+  fill: function (top, left, tds, tableState) {
+    if (tds.length) {
+      var cols = tds[0].reduce((pre, cur) => pre + (cur.colSpan || 1), 0),
+        colsCurrent = tableState[0].reduce((pre, cur) => pre + (cur.cs || 1), 0)
+      tdsClone = tds.map((row) => row.map((cell) => cell))
+      while (tableState.length < top + tds.length) {
+        this.addRow(tableState)
+      }
+      for (var i = 0; i < left + cols - colsCurrent; i++) {
+        tableState.forEach((row) => row.push(''))
+      }
+      this.splitPaste(top, left, tds.length, cols, tableState)
+      this.loopArea(top, left, tdsClone.length, cols, tableState, null, (row, col) => {
+        if (this.table[row][col]) return
+        var td = tdsClone[row - top].shift()
+        if (td.rowSpan > 1 || td.colSpan > 1) {
+          this.addMerge(row, col, td.rowSpan || 1, td.colSpan || 1, tableState)
+        }
+      })
+      var tableClone = duplicate(tableState.slice(top, top + tds.length))
+      this.loopArea(top, left, tds.length, cols, tableState, tableClone, (row, col, mcol) => {
+        if (this.isGoastCell(this.table[row][col])) return
+        var td = tds[row - top].shift()
+        typeof tableClone[row - top][mcol] == 'string'
+          ? (tableClone[row - top][mcol] = td.textContent)
+          : (tableClone[row - top][mcol].v = td.textContent)
+      })
+    }
+  },
+  load: function (tableData) {
+    this.table.splice(0, this.table.length)
+    var cols = tableData[0].reduce((pre, cur) => pre + (cur.cs || 1), 0)
+    this.loopArea(0, 0, tableData.length, cols, null, null, (row, col, mcol) => {
+      if (this.table[row][col]) return
+      var cell = tableData[row][mcol]
+      if (cell.rs > 1 || cell.cs > 1) {
+        this.addMerge(row, col, cell.rs || 1, cell.cs || 1)
+      }
+    })
   },
 }
 
@@ -133,24 +193,27 @@ var vm = L({
   toolbar: {
     open: L.input({
       _type: 'file',
-      _accept: '.json5,text/json5',
+      _accept: '.json5,text/json5,.json,text/json',
       onchange: function (e) {
         var fr = new FileReader()
         fr.readAsText(this.files[0])
-        fr.onload = function (e) {
-          S.table = JSON5.parse(fr.result)
+        fr.onload = (e) => {
+          var parser = this.files[0].name.endsWith('.json') ? JSON : JSON5,
+            result = parser.parse(fr.result)
+          mergeManager.load(result)
+          S.table = result
         }
       },
     }),
     newRow: toolButton('新行', function (e) {
-      S.table.push(S.table[0].map(() => ''))
+      mergeManager.addRow(S.table)
     }),
     newColumn: toolButton('新列', function (e) {
       S.table.forEach((row) => row.push(''))
     }),
     newRow2: toolButton('新2行', function (e) {
-      S.table.push(S.table[0].map(() => ''))
-      S.table.push(S.table[0].map(() => ''))
+      mergeManager.addRow(S.table)
+      mergeManager.addRow(S.table)
     }),
     newColumn2: toolButton('新2列', function (e) {
       S.table.forEach((row) => row.push(''))
@@ -184,7 +247,14 @@ var vm = L({
     split: toolButton('分解', function (e) {
       mergeManager.split(S.selected.top, S.selected.left, S.selected.height, S.selected.width, S.table)
     }),
-    save: toolButton('保存', function (e) {
+    saveJson: toolButton('保存json', function (e) {
+      var link = document.createElement('a')
+      link.download = 'table.json'
+      link.type = 'text/json'
+      link.href = URL.createObjectURL(new Blob([JSON.stringify(S.table)]))
+      link.click()
+    }),
+    saveJson5: toolButton('保存json5', function (e) {
       var link = document.createElement('a')
       link.download = 'table.json5'
       link.type = 'text/json5'
@@ -248,6 +318,19 @@ var vm = L({
       selecting = false
       var selectEnd = e.target.dataset.visualPos.split(',').map(Number)
       S.selected = mergeManager.getSelected(...selectStart, ...selectEnd)
+    },
+    onpaste: function (e) {
+      var tmp = e.clipboardData.getData('text/html'),
+        p = new DOMParser(),
+        d = p.parseFromString(tmp, 'text/html'),
+        pasted = d && d.querySelector('table'),
+        trs = [...((pasted && pasted.querySelectorAll('tr')) || [])]
+      mergeManager.fill(
+        S.selected.top,
+        S.selected.left,
+        trs.map((tr) => [...(tr.querySelectorAll('td') || [])]),
+        S.table
+      )
     },
   }),
 })
