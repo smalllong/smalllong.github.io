@@ -28,6 +28,7 @@ td {
   border: 1px solid #ddd;
   min-width: 80px;
   height: 1em;
+  line-height: 1;
   position: relative;
   outline: none;
 }
