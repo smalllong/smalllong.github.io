@@ -176,13 +176,16 @@ var mergeManager = {
     }
   },
   addRow: function (tableState) {
-    var cols = tableState[0].reduce((pre, cur) => pre + (cur.cs || 1), 0)
+    var cols = this.getCols(tableState[0])
     tableState.push(genArr(cols, ''))
+  },
+  getCols: function (tableStateRow) {
+    return tableStateRow.reduce((pre, cur) => pre + (cur.cs || 1), 0)
   },
   fill: function (top, left, tds, tableState) {
     if (tds.length) {
       var cols = tds[0].reduce((pre, cur) => pre + (cur.colSpan || 1), 0),
-        colsCurrent = tableState[0].reduce((pre, cur) => pre + (cur.cs || 1), 0)
+        colsCurrent = this.getCols(tableState[0])
       tdsClone = tds.map((row) => row.map((cell) => cell))
       while (tableState.length < top + tds.length) {
         this.addRow(tableState)
@@ -235,6 +238,21 @@ var S = L.useState({
     fc: '#000000',
   },
 })
+
+function endSelect() {
+  selecting = false
+  curData = S.table[S.selected.top][mergeManager.getModelCol(S.selected.top, S.selected.left)]
+  S.curColors.bc = curData.bc || '#ffffff'
+  S.curColors.fc = curData.fc || '#000000'
+}
+
+function handleSelect(e, end) {
+  if (selecting && e.target.dataset.visualPos) {
+    var selectEnd = e.target.dataset.visualPos.split(',').map(Number)
+    S.selected = mergeManager.getSelected(...selectStart, ...selectEnd)
+    end && endSelect()
+  } else if (selecting) endSelect()
+}
 
 var vm = L({
   toolbar: {
@@ -306,9 +324,14 @@ var vm = L({
   },
   mainTable: L.table({
     _style: () => (S.bgColor ? 'background-color:' + S.bgColor : ''),
+    header: L.tr({
+      headerLeft: L.td(),
+      $$: () => L.for(mergeManager.getCols(S.table[0]), (i) => L.td.headerTop(String.fromCharCode(65 + i))),
+    }),
     $$: () => {
       return S.table.map((row, i) =>
         L.tr({
+          headerLeft: L.td(i + 1),
           $$: row.map((cell, j) =>
             L.td({
               $$: () => (typeof cell == 'object' ? cell.v : cell),
@@ -328,7 +351,7 @@ var vm = L({
                 if (inY && pos1 == S.selected.left) results.push('selected-left')
                 if (inX && i + (cell.rs || 1) - 1 == S.selected.top + S.selected.height - 1)
                   results.push('selected-bottom')
-                if (inY && pos1 == S.selected.left + S.selected.width - 1) results.push('selected-right')
+                if (inY && pos1 == S.selected.left + S.selected.width - (cell.cs || 1)) results.push('selected-right')
                 return results.join(' ')
               },
             })
@@ -347,21 +370,8 @@ var vm = L({
       selecting = true
       selectStart = e.target.dataset.visualPos.split(',').map(Number)
     },
-    onmousemove: function (e) {
-      if (selecting) {
-        var selectEnd = e.target.dataset.visualPos.split(',').map(Number)
-        S.selected = mergeManager.getSelected(...selectStart, ...selectEnd)
-      }
-    },
-    onmouseup: function (e) {
-      var pos = e.target.dataset.pos.split(',').map(Number),
-        curData = S.table[pos[0]][pos[1]]
-      S.curColors.bc = curData.bc || '#ffffff'
-      S.curColors.fc = curData.fc || '#000000'
-      selecting = false
-      var selectEnd = e.target.dataset.visualPos.split(',').map(Number)
-      S.selected = mergeManager.getSelected(...selectStart, ...selectEnd)
-    },
+    onmousemove: (e) => handleSelect(e),
+    onmouseup: (e) => handleSelect(e, true),
     onpaste: function (e) {
       var tmp = e.clipboardData.getData('text/html'),
         p = new DOMParser(),

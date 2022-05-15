@@ -32,6 +32,15 @@ td {
   position: relative;
   outline: none;
 }
+td.header-left {
+  background-color: #eee;
+  min-width: 20px;
+  text-align: center;
+}
+td.header-top {
+  background-color: #eee;
+  text-align: center;
+}
 
 td:focus,
 td.selected {
