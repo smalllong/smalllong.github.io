@@ -12,7 +12,7 @@ body {
   box-sizing: border-box;
   font-weight: bold;
   text-align: center;
-  padding: 8px;
+  padding: 16px;
   height: 100%;
   overflow: auto;
   perspective: 1400px;
@@ -29,17 +29,29 @@ body {
   position: relative;
   text-align: left;
   text-decoration: none;
-  transform: translateZ(-50px) rotateX(-40deg);
-  transition: .3s;
+  transform: scale(0.9) translateZ(-50px) rotateX(-40deg);
+  transition: 0.3s;
   vertical-align: middle;
 }
 .tiles-item:hover {
   box-shadow: 0 16px 16px #000;
-  filter: brightness(1.2);
   transform: none;
+  z-index: 100;
+}
+.tile-title {
+  color: #fff;
 }
 .tile-img {
   margin-top: 10px;
   max-width: 110%;
-  max-height: 110%;
+  max-height: 90%;
+}
+.open-in-win {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 8px;
+}
+.winbox {
+  border-radius: 12px;
 }

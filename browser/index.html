@@ -1,55 +1,54 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Browser Info</title>
-  <style>
-    body {
-      font-size: 20px;
-    }
-    .root {
-      position: fixed;
-      width: 100%;
-    }
-  </style>
-</head>
-
-<body>
-  <script src='https://unpkg.com/lightue@0.1.3/lightue.min.js'></script>
-  <script>
-    var S = Lightue.useState({
-      position: {
-        accuracy: '',
-        latitude: '',
-        longitude: '',
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Browser Info</title>
+    <style>
+      body {
+        font-size: 20px;
       }
-    })
-    var vm = Lightue({
-      infos: [
-        'window.innerWidth: ' + window.innerWidth,
-        'window.innerHeight: ' + window.innerHeight,
-        'window.screen.width: ' + window.screen.width,
-        'window.screen.height: ' + window.screen.height,
-        'window.devicePixelRatio: ' + window.devicePixelRatio,
-        'navigator.userAgent: ' + navigator.userAgent,
-      ],
-      position: {
-        accuracy: () => 'accuracy: '+S.position.accuracy,
-        latitude: () => 'latitude: '+S.position.latitude,
-        longitude: () => 'longitude: '+S.position.longitude,
-      },
-    })
-    navigator.geolocation.getCurrentPosition((result) => {
-      S.position = result.coords
-    })
-    window.onresize = function(e) {
-      vm.infos[0] = 'window.innerWidth: ' + window.innerWidth
-      vm.infos[1] = 'window.innerHeight: ' + window.innerHeight
-      vm.infos.$render()
-    }
-  </script>
-</body>
+      .root {
+        position: fixed;
+        width: 100%;
+      }
+    </style>
+  </head>
 
+  <body>
+    <script src="https://unpkg.com/lightue@0.2.3/lightue.min.js"></script>
+    <script>
+      var S = Lightue.useState({
+        innerWidth: window.innerWidth,
+        innerHeight: window.innerHeight,
+        position: {
+          accuracy: '',
+          latitude: '',
+          longitude: '',
+        },
+      })
+      var vm = Lightue({
+        infos: [
+          () => 'window.innerWidth: ' + S.innerWidth,
+          () => 'window.innerHeight: ' + S.innerHeight,
+          'window.screen.width: ' + window.screen.width,
+          'window.screen.height: ' + window.screen.height,
+          'window.devicePixelRatio: ' + window.devicePixelRatio,
+          'navigator.userAgent: ' + navigator.userAgent,
+        ],
+        position: {
+          accuracy: () => 'accuracy: ' + S.position.accuracy,
+          latitude: () => 'latitude: ' + S.position.latitude,
+          longitude: () => 'longitude: ' + S.position.longitude,
+        },
+      })
+      navigator.geolocation.getCurrentPosition((result) => {
+        S.position = result.coords
+      })
+      window.onresize = function (e) {
+        S.innerWidth = window.innerWidth
+        S.innerHeight = window.innerHeight
+      }
+    </script>
+  </body>
 </html>
