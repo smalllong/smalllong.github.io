@@ -8,7 +8,7 @@ function randomColor(initS, initL) {
 }
 
 function Tile(title, link, img) {
-  var color = randomColor(80, 25)
+  var color = randomColor(80, 20)
   return {
     _style: 'background-color: ' + color,
     tileTitle: {
@@ -31,8 +31,8 @@ function Tile(title, link, img) {
         height: 480,
         x: 'center',
         y: 'center',
-        border: 4,
-        background: color,
+        border: 6,
+        background: color + ' linear-gradient(to bottom, #000, #bbb, #000)',
       })
     },
   }
@@ -41,7 +41,7 @@ function Tile(title, link, img) {
 L({
   _style: 'background-image: linear-gradient(' + randomColor(20, 10) + ',' + randomColor(20, 10) + ')',
   tiles: [
-    Tile('Simple sheet editor', 'json5-sheet-editor/', 'spreadsheet/index.png'),
+    Tile('Simple sheet editor', 'https://smalllong.github.io/json5-sheet-editor/', 'spreadsheet/index.png'),
     Tile('Skyscrapers Map in Shanghai', 'sh-skyscrapers/index.html', 'sh-skyscrapers/index.png'),
     Tile('get your browser information', 'browser/index.html', 'browser/index.png'),
     Tile('a simple digital clock', 'clock/index.html', 'clock/index.png'),

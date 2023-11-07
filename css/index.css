@@ -12,12 +12,17 @@ body {
   box-sizing: border-box;
   font-weight: bold;
   text-align: center;
+  text-shadow: 0 0 4px #444;
   padding: 16px;
   height: 100%;
   overflow: auto;
   perspective: 1400px;
 }
 .tiles-item {
+  background-image: linear-gradient(to bottom, #000, #bbb, #000);
+  background-blend-mode: color-dodge;
+  background-position-y: -180px;
+  background-repeat: no-repeat;
   border-radius: 12px;
   box-shadow: 0 8px 8px #000;
   color: #fff;
@@ -34,6 +39,7 @@ body {
   vertical-align: middle;
 }
 .tiles-item:hover {
+  background-position-y: 0;
   box-shadow: 0 16px 16px #000;
   transform: none;
   z-index: 100;
@@ -45,7 +51,14 @@ body {
   margin-top: 10px;
   max-width: 110%;
   max-height: 90%;
+  opacity: 0.85;
 }
 .winbox {
   border-radius: 12px;
+  background-image: linear-gradient(to bottom, #000, #bbb, #000);
+  background-blend-mode: color-dodge;
+  box-shadow: 0 0 20px rgba(0,0,0,.5), 0 0 6px rgba(0,0,0,.5);
+}
+.winbox.min {
+  background-position-y: 18px !important;
 }

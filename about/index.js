@@ -15,13 +15,6 @@ new L({
       }),
     },
     {
-      $$: 'gitee:',
-      link: L.a({
-        _href: 'https://gitee.com/smalllong',
-        $$: 'https://gitee.com/smalllong',
-      }),
-    },
-    {
       $$: 'email:',
       link: L.a({
         _href: 'mailto:m18818276304@icloud.com',
