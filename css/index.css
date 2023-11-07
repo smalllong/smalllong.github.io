@@ -46,12 +46,6 @@ body {
   max-width: 110%;
   max-height: 90%;
 }
-.open-in-win {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  padding: 8px;
-}
 .winbox {
   border-radius: 12px;
 }

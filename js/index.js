@@ -41,7 +41,7 @@ function Tile(title, link, img) {
 L({
   _style: 'background-image: linear-gradient(' + randomColor(20, 10) + ',' + randomColor(20, 10) + ')',
   tiles: [
-    Tile('Simple sheet editor', 'spreadsheet/index.html', 'spreadsheet/index.png'),
+    Tile('Simple sheet editor', 'json5-sheet-editor/', 'spreadsheet/index.png'),
     Tile('Skyscrapers Map in Shanghai', 'sh-skyscrapers/index.html', 'sh-skyscrapers/index.png'),
     Tile('get your browser information', 'browser/index.html', 'browser/index.png'),
     Tile('a simple digital clock', 'clock/index.html', 'clock/index.png'),
