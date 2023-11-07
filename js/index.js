@@ -22,7 +22,7 @@ function Tile(title, link, img) {
           _src: img,
         }
       : undefined,
-    onclick: (e) => {
+    onclick: e => {
       if (e.target.tagName == 'A') return
       e.preventDefault()
       new WinBox(title, {
@@ -50,6 +50,7 @@ L({
     Tile('Zoomable full screen photo viewer', 'photoViewer/index.html'),
     Tile('Simple polygon test', 'simplePolygon/index.html'),
     Tile('A colorful ball fountain with motion blur', 'fountain/index.html'),
+    Tile('A flip style num stepper', 'flipNum/index.html'),
     Tile('About me', 'about/index.html'),
   ],
 })
