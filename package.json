@@ -4,6 +4,8 @@
   "description": "smalllong's website",
   "main": "index.html",
   "scripts": {
+    "build": "coffee -c **/*.coffee",
+    "dev": "coffee -w -c **/*.coffee",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
