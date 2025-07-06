@@ -25,6 +25,7 @@ Tile = (title, link, image) =>
 
 L div.tiles style: 'background-image: linear-gradient(' + randomColor(20, 10) + ',' + randomColor(20, 10) + ')',
   Tile 'Simple sheet editor', 'https://smalllong.github.io/json5-sheet-editor/', 'spreadsheet/index.png'
+  Tile 'Sites with good compatability', 'https://smalllong.github.io/compat-sites/index.html'
   Tile 'Skyscrapers Map in Shanghai', 'sh-skyscrapers/index.html', 'sh-skyscrapers/index.png'
   Tile 'get your browser information', 'browser/index.html', 'browser/index.png'
   Tile 'a simple digital clock', 'clock/index.html', 'clock/index.png'
