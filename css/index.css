@@ -5,10 +5,8 @@ body {
   height: 100%;
   margin: 0;
 }
-.root {
-  height: 100%;
-}
 .tiles {
+  height: 100%;
   box-sizing: border-box;
   font-weight: bold;
   text-align: center;
@@ -18,7 +16,7 @@ body {
   overflow: auto;
   perspective: 1400px;
 }
-.tiles-item {
+.tile {
   background-image: linear-gradient(to bottom, #000, #bbb, #000);
   background-blend-mode: color-dodge;
   background-position-y: -180px;
@@ -38,16 +36,16 @@ body {
   transition: 0.3s;
   vertical-align: middle;
 }
-.tiles-item:hover {
+.tile:hover {
   background-position-y: 0;
   box-shadow: 0 16px 16px #000;
   transform: none;
   z-index: 100;
 }
-.tile-title {
+.tileTitle {
   color: #fff;
 }
-.tile-img {
+.tileImg {
   margin-top: 10px;
   max-width: 110%;
   max-height: 90%;
