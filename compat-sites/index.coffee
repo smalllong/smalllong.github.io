@@ -16,12 +16,10 @@ Tile = (title, link, image) =>
 L div.tiles style: 'background-image: linear-gradient(' + randomColor(20, 10) + ',' + randomColor(20, 10) + ')',
   div.title '本站收录各种兼容性优秀的网站，适合老设备、老浏览器访问'
   div.title '常用'
-  Tile '搜狗', 'https://www.sogou.com', 'logos/sogou.png'
   Tile 'hao123', 'https://www.hao123.com', 'logos/hao123.png'
   Tile '2345', 'https://www.2345.com', 'logos/2345.svg'
   Tile '优设', 'https://hao.uisdc.com', 'logos/uisdc.png'
   div.title '日常'
-  Tile '天气网', 'https://m.weather.com.cn'
   Tile '时间网', 'http://www.shijian.cc', 'logos/shijian.png'
   Tile '中国居民膳食指南', 'http://dg.cnsoc.org'
   Tile '唤醒食物', 'https://www.foodwake.cn'
