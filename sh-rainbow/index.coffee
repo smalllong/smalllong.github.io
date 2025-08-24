@@ -1,0 +1,28 @@
+map = new BMapGL.Map "map-container"
+map.centerAndZoom new BMapGL.Point(121.48, 31.22), 12
+map.enableScrollWheelZoom true
+map.addControl new BMapGL.ScaleControl()
+map.addControl new BMapGL.ZoomControl()
+
+data = [
+    # [经度，纬度，名称，描述]
+    [121.471, 31.229, 'Reborn', '酒女聚集地'],
+    [121.498, 31.155, '汤连得', '泡汤爱好者聚集地'],
+    [121.567, 31.209, '龙阳路', '户外爱好者聚集地'],
+    [121.397, 31.352, '顾村绿地', '户外爱好者聚集地'],
+    [121.410, 31.070, '颛桥绿地', '户外爱好者聚集地'],
+    [121.369, 31.364, '刘行', '吃喝玩乐买买买'],
+    [121.458, 31.234, '健身房', '按次健身超便宜'],
+    [121.350, 31.172, '尚沐汤泉', '泡汤水果爱好者聚集地'],
+    [121.516, 31.287, '微笑', '乒乓球爱好者聚集地'],
+]
+
+data.forEach (interest, i) =>
+    label = new BMapGL.Label interest[2],
+        position: new BMapGL.Point(interest[0], interest[1])
+    label.addEventListener 'click', (e) => 
+        alert interest[3]
+    map.addOverlay label
+
+vm = L
+    $el: '#container'

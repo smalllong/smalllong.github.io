@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>上海🌈地图</title>
+    <style type="text/css">
+      html {
+        height: 100%;
+      }
+
+      body {
+        height: 100%;
+        margin: 0px;
+        padding: 0px;
+      }
+
+      #map-container {
+        height: 100%;
+      }
+
+      .BMapLabel {
+        padding: 0 !important;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        border: 3px solid transparent !important;
+        border-image: linear-gradient(45deg, #dc4024, #852dc9) 1 !important;
+        animation: colorchange 6s linear infinite;
+      }
+
+      @keyframes colorchange {
+        0% {
+          filter: hue-rotate(0deg);
+        }
+        100% {
+          filter: hue-rotate(360deg);
+        }
+      }
+    </style>
+    <script
+      type="text/javascript"
+      src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=6cZei032t8UyG2SWxWmXF01NXmIDGx5o"
+    ></script>
+  </head>
+
+  <body>
+    <div id="map-container"></div>
+    <div id="container"></div>
+    <script src="https://unpkg.com/lightue@1.0.3/dist/lightue-compat.min.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>
